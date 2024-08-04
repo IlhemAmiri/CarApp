@@ -5,6 +5,7 @@ import HomeScreen from './Screens/HomeScreen';
 import ProfileScreen from './Screens/ProfileScreen';
 import UserScreen from './Screens/UserScreen';
 import LoginScreen from './Screens/LoginScreen';
+import SignupScreen from './Screens/SignupScreen'; // Assurez-vous d'importer SignupScreen
 import { NavigationContainer, useNavigation, DrawerActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -77,6 +78,7 @@ const App = () => {
           <Stack.Screen name="Login">
             {props => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
           </Stack.Screen>
+          <Stack.Screen name="Signup" component={SignupScreen} /> 
         </Stack.Navigator>
       )}
     </NavigationContainer>
