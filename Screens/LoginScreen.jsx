@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  ImageBackground,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Checkbox from 'expo-checkbox';
@@ -96,117 +97,126 @@ export default function LoginScreen({navigation, setIsLoggedIn}) {
     }
   };
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <Image source={require('../assets/logo2.png')} style={styles.logo} />
+    <ImageBackground
+      source={require('../assets/bg.png')}
+      style={styles.background}>
+      <View style={styles.container}>
+        <StatusBar style="auto" />
+        <Image source={require('../assets/logo1.png')} style={styles.logo} />
 
-      <View style={styles.inputContainer}>
-        <Icon name="email" size={24} color="gray" style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={text => {
-            setEmail(text);
-            setEmailTouched(true);
-          }}
-        />
-        {emailTouched && (
-          <Icon
-            name={isEmailValid ? 'check-circle' : 'cancel'}
-            size={24}
-            color={isEmailValid ? 'green' : 'red'}
-            style={styles.validationIcon}
+        <View style={styles.inputContainer}>
+          <Icon name="email" size={24} color="gray" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={text => {
+              setEmail(text);
+              setEmailTouched(true);
+            }}
           />
-        )}
-      </View>
-      {errors.email ? (
-        <Text style={styles.errorText}>{errors.email}</Text>
-      ) : null}
-
-      <View style={styles.inputContainer}>
-        <Icon name="lock" size={24} color="gray" style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry={!passwordVisible}
-          value={password}
-          onChangeText={text => {
-            setPassword(text);
-            setPasswordTouched(true);
-          }}
-        />
-        <TouchableOpacity
-          style={styles.eyeIcon}
-          onPress={() => setPasswordVisible(!passwordVisible)}>
-          <Icon
-            name={passwordVisible ? 'visibility-off' : 'visibility'}
-            size={24}
-            color="gray"
-          />
-        </TouchableOpacity>
-        {passwordTouched && (
-          <Icon
-            name={isPasswordValid ? 'check-circle' : 'cancel'}
-            size={24}
-            color={isPasswordValid ? 'green' : 'red'}
-            style={styles.validationIcon}
-          />
-        )}
-      </View>
-      {errors.password ? (
-        <Text style={styles.errorText}>{errors.password}</Text>
-      ) : null}
-
-      <View style={styles.rememberMeForgotPasswordContainer}>
-        <View style={styles.rememberMeContainer}>
-          <Checkbox
-            value={rememberMe}
-            onValueChange={setRememberMe}
-            color={rememberMe ? '#1ECB15' : undefined}
-            style={styles.checkbox}
-          />
-          <Text style={styles.rememberMeText}>Remember Me</Text>
+          {emailTouched && (
+            <Icon
+              name={isEmailValid ? 'check-circle' : 'cancel'}
+              size={24}
+              color={isEmailValid ? 'green' : 'red'}
+              style={styles.validationIcon}
+            />
+          )}
         </View>
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
-      </View>
+        {errors.email ? (
+          <Text style={styles.errorText}>{errors.email}</Text>
+        ) : null}
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+        <View style={styles.inputContainer}>
+          <Icon name="lock" size={24} color="gray" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry={!passwordVisible}
+            value={password}
+            onChangeText={text => {
+              setPassword(text);
+              setPasswordTouched(true);
+            }}
+          />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => setPasswordVisible(!passwordVisible)}>
+            <Icon
+              name={passwordVisible ? 'visibility-off' : 'visibility'}
+              size={24}
+              color="gray"
+            />
+          </TouchableOpacity>
+          {passwordTouched && (
+            <Icon
+              name={isPasswordValid ? 'check-circle' : 'cancel'}
+              size={24}
+              color={isPasswordValid ? 'green' : 'red'}
+              style={styles.validationIcon}
+            />
+          )}
+        </View>
+        {errors.password ? (
+          <Text style={styles.errorText}>{errors.password}</Text>
+        ) : null}
 
-      <TouchableOpacity style={styles.googleButton}>
-        <Image
-          source={require('../assets/google.png')}
-          style={styles.googleLogo}
-        />
-        <Text style={styles.googleButtonText}>Sign in with Google</Text>
-      </TouchableOpacity>
+        <View style={styles.rememberMeForgotPasswordContainer}>
+          <View style={styles.rememberMeContainer}>
+            <Checkbox
+              value={rememberMe}
+              onValueChange={setRememberMe}
+              color={rememberMe ? '#1ECB15' : undefined}
+              style={styles.checkbox}
+            />
+            <Text style={styles.rememberMeText}>Remember Me</Text>
+          </View>
+          <Text style={styles.forgotPassword}>Forgot Password?</Text>
+        </View>
 
-      <Text style={styles.createAccount}>
-        Don't have an account?
-        <Text
-          style={styles.createAccountLink}
-          onPress={() => navigation.navigate('Signup')}>
-          Create one
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.googleButton}>
+          <Image
+            source={require('../assets/google.png')}
+            style={styles.googleLogo}
+          />
+          <Text style={styles.googleButtonText}>Sign in with Google</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.createAccount}>
+          Don't have an account?
+          <Text
+            style={styles.createAccountLink}
+            onPress={() => navigation.navigate('Signup')}>
+            Create one
+          </Text>
         </Text>
-      </Text>
-    </View>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
   logo: {
-    width: '40%',
+    width: '50%',
     height: undefined,
     aspectRatio: 1,
     resizeMode: 'contain',
@@ -261,10 +271,12 @@ const styles = StyleSheet.create({
   },
   rememberMeText: {
     fontSize: 16,
-    color: '#333',
+    color: '#fff',
+    fontWeight: 'bold',
   },
   forgotPassword: {
     color: '#1ECB15',
+    fontWeight: 'bold',
   },
   button: {
     width: '100%',
@@ -301,7 +313,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   createAccount: {
-    color: '#333',
+    color: '#fff',
     marginTop: 10,
   },
   createAccountLink: {

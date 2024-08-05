@@ -1,23 +1,24 @@
-import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
-import {Avatar, Title} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {useNavigation} from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import { Avatar, Title } from 'react-native-paper';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DrawerList = [
-  {icon: 'home-outline', label: 'Home', navigateTo: 'Home'},
-  {icon: 'account-multiple', label: 'Profile', navigateTo: 'Profile'},
-  {icon: 'account-group', label: 'User', navigateTo: 'User'},
-  {icon: 'bookshelf', label: 'Library', navigateTo: ''},
+  { icon: 'home-outline', label: 'Home', navigateTo: 'Home' },
+  { icon: 'account-multiple', label: 'Profile', navigateTo: 'Profile' },
+  { icon: 'account-group', label: 'User', navigateTo: 'User' },
+  { icon: 'bookshelf', label: 'Library', navigateTo: '' },
 ];
 
-const DrawerLayout = ({icon, label, navigateTo}) => {
+const DrawerLayout = ({ icon, label, navigateTo }) => {
   const navigation = useNavigation();
   return (
     <DrawerItem
-    icon={({ color, size }) => <Icon name={icon} color={color} size={size} />}
+      icon={({ color, size }) => <Icon name={icon} color={color} size={size} />}
       label={label}
       onPress={() => {
         navigation.navigate(navigateTo);
@@ -27,35 +28,84 @@ const DrawerLayout = ({icon, label, navigateTo}) => {
 };
 
 const DrawerItems = () => {
-  return DrawerList.map((el, i) => {
-    return (
-      <DrawerLayout
-        key={i}
-        icon={el.icon}
-        label={el.label}
-        navigateTo={el.navigateTo}
-      />
-    );
-  });
+  return DrawerList.map((el, i) => (
+    <DrawerLayout
+      key={i}
+      icon={el.icon}
+      label={el.label}
+      navigateTo={el.navigateTo}
+    />
+  ));
 };
 
-function DrawerContent(props) {
+function DrawerContent({ setIsLoggedIn, ...props }) {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const userId = await AsyncStorage.getItem('userId');
+        const response = await fetch(`http://192.168.1.185:3001/users/clients/${userId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+
+        const data = await response.json();
+        setUserData(data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await AsyncStorage.clear();
+      setIsLoggedIn(false);
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Error clearing AsyncStorage:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#1ECB15" />
+      </View>
+    );
+  }
+
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}>
           <TouchableOpacity activeOpacity={0.8}>
             <View style={styles.userInfoSection}>
-              <View style={{flexDirection: 'row', marginTop: 15}}>
+              <View style={{ flexDirection: 'row', marginTop: 15 }}>
                 <Avatar.Image
-                  source={require('./assets/avatar.jpg')}
+                  source={{ uri: userData?.image || 'https://via.placeholder.com/50' }}
                   size={50}
-                  style={{marginTop: 5}}
+                  style={{ marginTop: 5 }}
                 />
-                <View style={{marginLeft: 10, flexDirection: 'column'}}>
-                  <Title style={styles.title}>Adarsh</Title>
+                <View style={{ marginLeft: 10, flexDirection: 'column' }}>
+                  <Title style={styles.title}>{userData?.prenom} {userData?.nom}</Title>
                   <Text style={styles.caption} numberOfLines={1}>
-                    adarshthakur210@gmail.com
+                    {userData?.email}
                   </Text>
                 </View>
               </View>
@@ -68,7 +118,9 @@ function DrawerContent(props) {
       </DrawerContentScrollView>
       <View>
         <DrawerItem
-        label="Sign Out"
+          icon={({ color, size }) => <Icon name="exit-to-app" color={color} size={size} />}
+          label="Sign Out"
+          onPress={handleSignOut}
         />
       </View>
     </View>
@@ -95,6 +147,11 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderTopColor: '#f4f4f4',
     borderTopWidth: 1,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
