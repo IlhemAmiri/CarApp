@@ -86,7 +86,7 @@ export default function SignupScreen() {
           Alert.alert('Image Picker Error', response.errorMessage);
         } else if (response.assets && response.assets.length > 0) {
           const selectedImage = response.assets[0];
-          setFormData({...formData, image: selectedImage});
+          setImage(`data:${selectedImage.type};base64,${selectedImage.base64}`);
         }
       },
     );
@@ -305,52 +305,67 @@ export default function SignupScreen() {
       case 3:
         return (
           <>
-          <View style={styles.inputContainer}>
-          <Icon name="cake" size={24} color="gray" style={styles.inputIcon} />
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => setShowBirthDatePicker(true)}>
-              <Text>{birthDate.toDateString()}</Text>
-            </TouchableOpacity>
-            {showBirthDatePicker && (
-              <DateTimePicker
-                value={birthDate}
-                mode="date"
-                display="default"
-                onChange={handleBirthDateChange}
-                maximumDate={
-                  new Date(
-                    new Date().setFullYear(new Date().getFullYear() - 18),
-                  )
-                }
+            <View style={styles.inputContainer}>
+              <Icon
+                name="cake"
+                size={24}
+                color="gray"
+                style={styles.inputIcon}
               />
-            )}
-             </View>
-             <View style={styles.inputContainer}>
-              <Icon name="directions-car" size={24} color="gray" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Driving License Number"
-              value={drivingLicenseNumber}
-              onChangeText={text => setDrivingLicenseNumber(text)}
-              required
-            />
+              <TouchableOpacity
+                style={styles.input}
+                onPress={() => setShowBirthDatePicker(true)}>
+                <Text>{birthDate.toDateString()}</Text>
+              </TouchableOpacity>
+              {showBirthDatePicker && (
+                <DateTimePicker
+                  value={birthDate}
+                  mode="date"
+                  display="default"
+                  onChange={handleBirthDateChange}
+                  maximumDate={
+                    new Date(
+                      new Date().setFullYear(new Date().getFullYear() - 18),
+                    )
+                  }
+                />
+              )}
             </View>
             <View style={styles.inputContainer}>
-            <Icon name="event" size={24} color="gray" style={styles.inputIcon} />
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => setShowLicenseExpiryPicker(true)}>
-              <Text>{drivingLicenseExpiry.toDateString()}</Text>
-            </TouchableOpacity>
-            {showLicenseExpiryPicker && (
-              <DateTimePicker
-                value={drivingLicenseExpiry}
-                mode="date"
-                display="default"
-                onChange={handleLicenseExpiryChange}
+              <Icon
+                name="directions-car"
+                size={24}
+                color="gray"
+                style={styles.inputIcon}
               />
-            )}
+              <TextInput
+                style={styles.input}
+                placeholder="Driving License Number"
+                value={drivingLicenseNumber}
+                onChangeText={text => setDrivingLicenseNumber(text)}
+                required
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Icon
+                name="event"
+                size={24}
+                color="gray"
+                style={styles.inputIcon}
+              />
+              <TouchableOpacity
+                style={styles.input}
+                onPress={() => setShowLicenseExpiryPicker(true)}>
+                <Text>{drivingLicenseExpiry.toDateString()}</Text>
+              </TouchableOpacity>
+              {showLicenseExpiryPicker && (
+                <DateTimePicker
+                  value={drivingLicenseExpiry}
+                  mode="date"
+                  display="default"
+                  onChange={handleLicenseExpiryChange}
+                />
+              )}
             </View>
             <TouchableOpacity style={styles.button} onPress={pickImage}>
               <Text style={styles.buttonText}>Upload Image</Text>
@@ -358,7 +373,6 @@ export default function SignupScreen() {
             {image && (
               <Image source={{uri: image}} style={styles.uploadedImage} />
             )}
-             
           </>
         );
       default:
