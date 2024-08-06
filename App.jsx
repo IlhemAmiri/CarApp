@@ -3,9 +3,10 @@ import 'react-native-gesture-handler';
 import { Image, TouchableOpacity } from 'react-native';
 import HomeScreen from './Screens/HomeScreen';
 import ProfileScreen from './Screens/ProfileScreen';
-import UserScreen from './Screens/UserScreen';
+import AccueilScreen from './Screens/AccueilScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
+import IlhemScreen from './Screens/IlhemScreen';
 import { NavigationContainer, useNavigation, DrawerActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -46,7 +47,8 @@ const Stacknav = () => {
         }}
       />
       <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name="User" component={UserScreen} />
+      <Stack.Screen name="Acceuil" component={AccueilScreen} />
+      <Stack.Screen name="Ilhem" component={IlhemScreen} />
     </Stack.Navigator>
   );
 };

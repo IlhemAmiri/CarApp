@@ -49,7 +49,6 @@ const HomeScreen = () => {
           onError={() => console.log('Failed to load image:', item.image)}
         />
       </View>
-      <View style={styles.verticalLine} />
       <View style={styles.rightSection}>
         <View style={styles.detailItem}>
           <MaterialCommunityIcons
@@ -169,11 +168,6 @@ const styles = StyleSheet.create({
   rightSection: {
     flex: 1,
     paddingLeft: 10,
-  },
-  verticalLine: {
-    width: 1,
-    height: '100%',
-    backgroundColor: '#ccc',
   },
   image: {
     width: 150,
