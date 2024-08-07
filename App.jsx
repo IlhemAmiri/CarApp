@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
 import { Image, TouchableOpacity } from 'react-native';
-import HomeScreen from './Screens/HomeScreen';
+import CarsScreen from './Screens/CarsScreen';
 import ProfileScreen from './Screens/ProfileScreen';
 import IlhemScreen from './Screens/IlhemScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
-import AccueilScreen from './Screens/AccueilScreen';
+import HomeScreen from './Screens/HomeScreen';
 import { NavigationContainer, useNavigation, DrawerActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -46,8 +46,8 @@ const Stacknav = () => {
           headerShown: true,
         }}
       />
+      <Stack.Screen name="Cars" component={CarsScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name="Acceuil" component={AccueilScreen} />
       <Stack.Screen name="Ilhem" component={IlhemScreen} />
     </Stack.Navigator>
   );
