@@ -110,7 +110,8 @@ const Stacknav = ({userData}) => {
                   borderRadius: SPACING * 1.5,
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}>
+                }}
+                onPress={() => navigation.navigate('Profile')}>
                 <Image
                   source={{
                     uri: userData?.image || 'https://via.placeholder.com/50',
@@ -131,12 +132,33 @@ const Stacknav = ({userData}) => {
         component={HomeScreen}
         options={{
           headerShown: true,
-          title: '',
+          title: '', // Hide the title
         }}
       />
-      <Stack.Screen name="Cars" component={CarsScreen} />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name="Ilhem" component={IlhemScreen} />
+      <Stack.Screen
+        name="Cars"
+        component={CarsScreen}
+        options={{
+          headerShown: true,
+          title: '', // Hide the title
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          headerShown: true,
+          title: '', // Hide the title
+        }}
+      />
+      <Stack.Screen
+        name="Ilhem"
+        component={IlhemScreen}
+        options={{
+          headerShown: true,
+          title: '', // Hide the title
+        }}
+      />
     </Stack.Navigator>
   );
 };
