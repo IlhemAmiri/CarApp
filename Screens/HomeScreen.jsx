@@ -18,7 +18,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ScrollView} from 'react-native-gesture-handler';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const avatar = require('../assets/avatar.jpg');
 const SPACING = 10;
@@ -81,8 +81,8 @@ const HomeScreen = () => {
       const response = await axios.get(
         `http://192.168.1.185:3001/favorite-cars/client/${userId}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+          headers: {Authorization: `Bearer ${token}`},
+        },
       );
       const favouriteCars = response.data.map(fav => fav.idVoiture);
       setFavourites(new Set(favouriteCars));
@@ -159,12 +159,38 @@ const HomeScreen = () => {
     </LinearGradient>
   );
 
-    const navigation = useNavigation();
-  
-    const navigateToCars = () => {
-      navigation.navigate('Cars');
-    };
+  const navigation = useNavigation();
 
+  const navigateToCars = () => {
+    navigation.navigate('Cars');
+  };
+
+  const data = [
+    {
+      id: 1,
+      discount: '20%',
+      title: 'New Arrival',
+      description: 'Get a new car discount, only valid this Friday',
+      image: require('../assets/bmw.png'),
+      gradientColors: ['#3563E9', '#5CAFFC'],
+    },
+    {
+      id: 2,
+      discount: '30%',
+      title: 'Electrical Cars',
+      description: 'Get a new car discount',
+      image: require('../assets/tesla.png'),
+      gradientColors: ['#60A23C', '#97DA6F'],
+    },
+    {
+      id: 3,
+      discount: '50%',
+      title: 'New Offer',
+      description: 'Get a new car discount, only valid this Friday',
+      image: require('../assets/audi.png'),
+      gradientColors: ['#965A33', '#a1887f'],
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -241,7 +267,7 @@ const HomeScreen = () => {
               backgroundColor: '#D3D3D3',
               padding: SPACING * 1.5,
               borderRadius: SPACING * 2,
-              color: colors.light,
+              color: colors.black,
               fontSize: SPACING * 2,
               paddingLeft: SPACING * 4,
             }}
@@ -267,200 +293,108 @@ const HomeScreen = () => {
           }}>
           Our Offres
         </Text>
-        <LinearGradient
-          colors={['#3563E9', '#5CAFFC']}
-          style={{
-            padding: SPACING * 3,
-            height: 165,
-            borderRadius: SPACING * 2,
-            flexDirection: 'row',
-            marginBottom: 10,
-          }}>
-          <View
-            style={{
-              maxWidth: '50%',
-            }}>
-            <Text
+        <FlatList
+          data={data}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={item => item.id.toString()}
+          contentContainerStyle={{paddingHorizontal: SPACING}}
+          renderItem={({item}) => (
+            <LinearGradient
+              colors={item.gradientColors}
               style={{
-                color: colors.light,
-                fontSize: SPACING * 3.5,
-                fontWeight: '800',
-                marginBottom: SPACING,
+                padding: SPACING * 3,
+                height: 185,
+                borderRadius: SPACING * 2,
+                flexDirection: 'row',
+                marginBottom: 10,
+                marginRight: SPACING * 2,
+                width: width * 0.9 , // Adjust the width of the cards
               }}>
-              20%
-            </Text>
-            <Text
-              style={{
-                color: colors.light,
-                fontWeight: '700',
-                fontSize: SPACING * 2,
-                marginBottom: SPACING,
-              }}>
-              New Arrival
-            </Text>
-            <Text
-              style={{
-                color: colors.light,
-                paddingBottom: SPACING * 2,
-              }}>
-              Get a new car discount, only valid this Friday
-            </Text>
-          </View>
-          <View
-            style={{
-              width: '70%',
-              position: 'relative',
-            }}>
-            <Image
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-              source={require('../assets/bmw.png')}
-            />
-          </View>
-        </LinearGradient>
-        <LinearGradient
-          colors={['#60A23C', '#97DA6F']}
-          style={{
-            padding: SPACING * 3,
-            height: 165,
-            borderRadius: SPACING * 2,
-            flexDirection: 'row',
-            marginBottom: 10,
-          }}>
-          <View
-            style={{
-              maxWidth: '50%',
-            }}>
-            <Text
-              style={{
-                color: colors.light,
-                fontSize: SPACING * 3.5,
-                fontWeight: '800',
-                marginBottom: SPACING,
-              }}>
-              20%
-            </Text>
-            <Text
-              style={{
-                color: colors.light,
-                fontWeight: '700',
-                fontSize: SPACING * 2,
-                marginBottom: SPACING,
-              }}>
-              New Arrival
-            </Text>
-            <Text
-              style={{
-                color: colors.light,
-                paddingBottom: SPACING * 2,
-              }}>
-              Get a new car discount, only valid this Friday
-            </Text>
-          </View>
-          <View
-            style={{
-              width: '70%',
-              position: 'relative',
-            }}>
-            <Image
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-              source={require('../assets/tesla.png')}
-            />
-          </View>
-        </LinearGradient>
-        <LinearGradient
-          colors={['#965A33', '#a1887f']}
-          style={{
-            padding: SPACING * 3,
-            height: 165,
-            borderRadius: SPACING * 2,
-            flexDirection: 'row',
-          }}>
-          <View
-            style={{
-              maxWidth: '50%',
-            }}>
-            <Text
-              style={{
-                color: colors.light,
-                fontSize: SPACING * 3.5,
-                fontWeight: '800',
-                marginBottom: SPACING,
-              }}>
-              20%
-            </Text>
-            <Text
-              style={{
-                color: colors.light,
-                fontWeight: '700',
-                fontSize: SPACING * 2,
-                marginBottom: SPACING,
-              }}>
-              New Arrival
-            </Text>
-            <Text
-              style={{
-                color: colors.light,
-                paddingBottom: SPACING * 2,
-              }}>
-              Get a new car discount, only valid this Friday
-            </Text>
-          </View>
-          <View
-            style={{
-              width: '70%',
-              position: 'relative',
-            }}>
-            <Image
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-              source={require('../assets/audi.png')}
-            />
-          </View>
-        </LinearGradient>
+              <View
+                style={{
+                  maxWidth: '50%',
+                }}>
+                <Text
+                  style={{
+                    color: colors.light,
+                    fontSize: SPACING * 3.5,
+                    fontWeight: '800',
+                    marginBottom: SPACING,
+                  }}>
+                  {item.discount}
+                </Text>
+                <Text
+                  style={{
+                    color: colors.light,
+                    fontWeight: '700',
+                    fontSize: SPACING * 2,
+                    marginBottom: SPACING,
+                  }}>
+                  {item.title}
+                </Text>
+                <Text
+                  style={{
+                    color: colors.light,
+                    paddingBottom: SPACING * 2,
+                  }}>
+                  {item.description}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: '70%', //ilhem
+                  position: 'relative',
+                }}>
+                <Image
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: SPACING * 2, // Adjust this value as needed
+                  }}
+                  source={item.image}
+                  resizeMode="contain" // Ensure the image fits within the view
+                />
+              </View>
+            </LinearGradient>
+          )}
+        />
         <View
           style={{
             marginVertical: SPACING * 2,
           }}>
           <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}>
-      <Text
-        style={{
-          color: colors.black,
-          fontSize: SPACING * 2.5,
-          fontWeight: '600',
-        }}>
-        Top Deals
-      </Text>
-      <TouchableOpacity onPress={navigateToCars}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text
             style={{
-              color: colors['dark-gray'], // or any color you prefer
-              fontWeight: '600',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}>
-            See all
-          </Text>
-          <MaterialIcons
-            name="arrow-upward"
-            size={SPACING * 1.7}
-            color={colors['dark-gray']} // or any color you prefer
-            style={{ transform: [{ rotate: '45deg' }] }}
-          />
-        </View>
-      </TouchableOpacity>
-    </View>
+            <Text
+              style={{
+                color: colors.black,
+                fontSize: SPACING * 2.5,
+                fontWeight: '600',
+              }}>
+              Top Deals
+            </Text>
+            <TouchableOpacity onPress={navigateToCars}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text
+                  style={{
+                    color: colors['dark-gray'], // or any color you prefer
+                    fontWeight: '600',
+                  }}>
+                  See all
+                </Text>
+                <MaterialIcons
+                  name="arrow-upward"
+                  size={SPACING * 1.7}
+                  color={colors['dark-gray']} // or any color you prefer
+                  style={{transform: [{rotate: '45deg'}]}}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
           <View
             style={{
               marginTop: SPACING * 2,
@@ -506,7 +440,7 @@ const HomeScreen = () => {
                           color: colors.black,
                           marginLeft: SPACING / 2,
                         }}>
-                        {/* {car.rating} */} 4.8
+                        {car.note}
                       </Text>
                     </View>
                     <TouchableOpacity onPress={() => toggleFavourite(car._id)}>
@@ -545,7 +479,7 @@ const HomeScreen = () => {
                         color: colors.black,
                         fontSize: SPACING * 1.5,
                       }}>
-                      $ {car.prixParJ}
+                      $ {car.prixParJ} /Day
                     </Text>
                     <TouchableOpacity
                       style={{
