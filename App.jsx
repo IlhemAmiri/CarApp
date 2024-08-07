@@ -1,22 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import 'react-native-gesture-handler';
-import { Image, TouchableOpacity } from 'react-native';
+import {Image, TouchableOpacity, View} from 'react-native';
+import axios from 'axios';
+import LinearGradient from 'react-native-linear-gradient';
 import CarsScreen from './Screens/CarsScreen';
 import ProfileScreen from './Screens/ProfileScreen';
 import IlhemScreen from './Screens/IlhemScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
 import HomeScreen from './Screens/HomeScreen';
-import { NavigationContainer, useNavigation, DrawerActions } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  NavigationContainer,
+  useNavigation,
+  DrawerActions,
+} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DrawerContent from './DrawerContents';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+const SPACING = 10;
+const colors = {
+  light: '#f0f0f0',
+  'dark-gray': '#333333',
+  black: '#000000',
+  yellow: '#FFD700',
+};
 
-const Stacknav = () => {
+const fetchUser = async (setUserData, setLoading) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const userId = await AsyncStorage.getItem('userId');
+    const response = await axios.get(
+      `http://192.168.1.185:3001/users/clients/${userId}`,
+      {
+        headers: {Authorization: `Bearer ${token}`},
+      },
+    );
+    setUserData(response.data);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const Stacknav = ({userData}) => {
   const navigation = useNavigation();
   return (
     <Stack.Navigator
@@ -24,26 +56,82 @@ const Stacknav = () => {
       screenOptions={{
         statusBarColor: '#0163d2',
         headerStyle: {
-          backgroundColor: '#0163d2',
+          backgroundColor: '#f0f0f0',
         },
         headerTintColor: '#fff',
         headerTitleAlign: 'center',
-        headerLeft: () => {
-          return (
-            <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-              <Image
-                source={require('./assets/menu.png')}
-                style={{ width: 25, height: 25, marginLeft: 10 }}
-              />
-            </TouchableOpacity>
-          );
-        },
+        headerLeft: () => (
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <LinearGradient
+              style={{
+                height: SPACING * 4,
+                width: SPACING * 4,
+                borderRadius: SPACING * 2,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              colors={[colors.light, colors['dark-gray']]}>
+              <TouchableOpacity
+                style={{
+                  height: SPACING * 3,
+                  width: SPACING * 3,
+                  backgroundColor: colors.black,
+                  borderRadius: SPACING * 1.5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+                <MaterialCommunityIcons
+                  name="dots-horizontal"
+                  color={colors.light}
+                  size={SPACING * 2}
+                />
+              </TouchableOpacity>
+            </LinearGradient>
+          </View>
+        ),
+        headerRight: () => (
+          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+            <LinearGradient
+              style={{
+                height: SPACING * 4,
+                width: SPACING * 4,
+                borderRadius: SPACING * 2,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginLeft: SPACING * 2,
+              }}
+              colors={[colors.light, colors['dark-gray']]}>
+              <TouchableOpacity
+                style={{
+                  height: SPACING * 3,
+                  width: SPACING * 3,
+                  backgroundColor: colors.black,
+                  borderRadius: SPACING * 1.5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  source={{
+                    uri: userData?.image || 'https://via.placeholder.com/50',
+                  }}
+                  style={{
+                    height: '100%',
+                    width: '100%',
+                    borderRadius: SPACING * 1.5,
+                  }}
+                />
+              </TouchableOpacity>
+            </LinearGradient>
+          </View>
+        ),
       }}>
       <Stack.Screen
         name="Home"
         component={HomeScreen}
         options={{
           headerShown: true,
+          title: '',
         }}
       />
       <Stack.Screen name="Cars" component={CarsScreen} />
@@ -53,20 +141,26 @@ const Stacknav = () => {
   );
 };
 
-const DrawerNav = ({ setIsLoggedIn }) => {
+const DrawerNav = ({setIsLoggedIn, userData}) => {
   return (
     <Drawer.Navigator
-      drawerContent={props => <DrawerContent {...props} setIsLoggedIn={setIsLoggedIn} />}
+      drawerContent={props => (
+        <DrawerContent {...props} setIsLoggedIn={setIsLoggedIn} />
+      )}
       screenOptions={{
         headerShown: false,
       }}>
-      <Drawer.Screen name="MainHome" component={Stacknav} />
+      <Drawer.Screen name="MainHome">
+        {props => <Stacknav {...props} userData={userData} />}
+      </Drawer.Screen>
     </Drawer.Navigator>
   );
 };
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -74,6 +168,7 @@ const App = () => {
         const isAuth = await AsyncStorage.getItem('isAuth');
         if (isAuth === 'true') {
           setIsLoggedIn(true);
+          fetchUser(setUserData, setLoading);
         }
       } catch (error) {
         console.error('Failed to fetch login status:', error);
@@ -83,10 +178,14 @@ const App = () => {
     checkLoginStatus();
   }, []);
 
+  if (loading) {
+    return null;
+  }
+
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        <DrawerNav setIsLoggedIn={setIsLoggedIn} />
+        <DrawerNav setIsLoggedIn={setIsLoggedIn} userData={userData} />
       ) : (
         <Stack.Navigator
           initialRouteName="Login"

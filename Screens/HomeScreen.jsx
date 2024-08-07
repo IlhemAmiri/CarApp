@@ -36,6 +36,14 @@ const HomeScreen = () => {
   const [favourites, setFavourites] = useState(new Set());
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleScroll = event => {
+    const index = Math.round(
+      event.nativeEvent.contentOffset.x / (width * 0.8 + SPACING * 2),
+    );
+    setActiveIndex(index);
+  };
   const [brands, setBrands] = useState([
     {
       name: 'Maserati',
@@ -197,67 +205,6 @@ const HomeScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <LinearGradient
-            style={{
-              height: SPACING * 4,
-              width: SPACING * 4,
-              borderRadius: SPACING * 2,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            colors={[colors.light, colors['dark-gray']]}>
-            <TouchableOpacity
-              style={{
-                height: SPACING * 3,
-                width: SPACING * 3,
-                backgroundColor: colors.black,
-                borderRadius: SPACING * 1.5,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <MaterialCommunityIcons
-                name="dots-horizontal"
-                color={colors.light}
-                size={SPACING * 2}
-              />
-            </TouchableOpacity>
-          </LinearGradient>
-          <LinearGradient
-            style={{
-              height: SPACING * 4,
-              width: SPACING * 4,
-              borderRadius: SPACING * 2,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            colors={[colors.light, colors['dark-gray']]}>
-            <TouchableOpacity
-              style={{
-                height: SPACING * 3,
-                width: SPACING * 3,
-                backgroundColor: colors.black,
-                borderRadius: SPACING * 1.5,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Image
-                source={{
-                  uri: userData?.image || 'https://via.placeholder.com/50',
-                }}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  borderRadius: SPACING * 1.5,
-                }}
-              />
-            </TouchableOpacity>
-          </LinearGradient>
-        </View>
-        <View
-          style={{
             position: 'relative',
             marginVertical: SPACING * 3,
             justifyContent: 'center',
@@ -293,72 +240,97 @@ const HomeScreen = () => {
           }}>
           Our Offres
         </Text>
-        <FlatList
-          data={data}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={item => item.id.toString()}
-          contentContainerStyle={{paddingHorizontal: SPACING}}
-          renderItem={({item}) => (
-            <LinearGradient
-              colors={item.gradientColors}
-              style={{
-                padding: SPACING * 3,
-                height: 185,
-                borderRadius: SPACING * 2,
-                flexDirection: 'row',
-                marginBottom: 10,
-                marginRight: SPACING * 2,
-                width: width * 0.9 , // Adjust the width of the cards
-              }}>
-              <View
+        <View>
+          <FlatList
+            data={data}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={item => item.id.toString()}
+            contentContainerStyle={{paddingHorizontal: SPACING}}
+            renderItem={({item}) => (
+              <LinearGradient
+                colors={item.gradientColors}
                 style={{
-                  maxWidth: '50%',
+                  padding: SPACING * 3,
+                  height: 185,
+                  borderRadius: SPACING * 2,
+                  flexDirection: 'row',
+                  marginBottom: 10,
+                  marginRight: SPACING * 2,
+                  width: width * 0.9, // Adjust the width of the cards
                 }}>
-                <Text
+                <View
                   style={{
-                    color: colors.light,
-                    fontSize: SPACING * 3.5,
-                    fontWeight: '800',
-                    marginBottom: SPACING,
+                    maxWidth: '50%',
                   }}>
-                  {item.discount}
-                </Text>
-                <Text
+                  <Text
+                    style={{
+                      color: colors.light,
+                      fontSize: SPACING * 3.5,
+                      fontWeight: '800',
+                      marginBottom: SPACING,
+                    }}>
+                    {item.discount}
+                  </Text>
+                  <Text
+                    style={{
+                      color: colors.light,
+                      fontWeight: '700',
+                      fontSize: SPACING * 2,
+                      marginBottom: SPACING,
+                    }}>
+                    {item.title}
+                  </Text>
+                  <Text
+                    style={{
+                      color: colors.light,
+                      paddingBottom: SPACING * 2,
+                    }}>
+                    {item.description}
+                  </Text>
+                </View>
+                <View
                   style={{
-                    color: colors.light,
-                    fontWeight: '700',
-                    fontSize: SPACING * 2,
-                    marginBottom: SPACING,
+                    width: '75%', //ilhem
+                    position: 'relative',
                   }}>
-                  {item.title}
-                </Text>
-                <Text
-                  style={{
-                    color: colors.light,
-                    paddingBottom: SPACING * 2,
-                  }}>
-                  {item.description}
-                </Text>
-              </View>
+                  <Image
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: SPACING * 2, // Adjust this value as needed
+                    }}
+                    source={item.image}
+                    resizeMode="contain" // Ensure the image fits within the view
+                  />
+                </View>
+              </LinearGradient>
+            )}
+            onScroll={handleScroll}
+            pagingEnabled
+            snapToAlignment="center"
+            decelerationRate="fast"
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              marginTop: SPACING,
+            }}>
+            {data.map((_, index) => (
               <View
+                key={index}
                 style={{
-                  width: '70%', //ilhem
-                  position: 'relative',
-                }}>
-                <Image
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: SPACING * 2, // Adjust this value as needed
-                  }}
-                  source={item.image}
-                  resizeMode="contain" // Ensure the image fits within the view
-                />
-              </View>
-            </LinearGradient>
-          )}
-        />
+                  height: SPACING,
+                  width: SPACING,
+                  borderRadius: SPACING / 2,
+                  backgroundColor: index === activeIndex ? '#000' : '#D3D3D3',
+                  marginHorizontal: SPACING / 2,
+                }}
+              />
+            ))}
+          </View>
+        </View>
         <View
           style={{
             marginVertical: SPACING * 2,
