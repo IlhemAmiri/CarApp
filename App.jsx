@@ -11,6 +11,7 @@ import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
 import HomeScreen from './Screens/HomeScreen';
 import BookingScreen from './Screens/BookingScreen';
+import OrdersScreen from './Screens/OrdersScreen';
 import {
   NavigationContainer,
   useNavigation,
@@ -60,7 +61,7 @@ const Stacknav = ({userData}) => {
         headerStyle: {
           backgroundColor: '#f0f0f0',
         },
-        headerTintColor: '#fff',
+        headerTintColor: '#000',
         headerTitleAlign: 'center',
         headerLeft: () => (
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -176,6 +177,14 @@ const Stacknav = ({userData}) => {
         }}
         name="Booking"
         component={BookingScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: 'My Order', // Hide the title
+        }}
+        name="Orders"
+        component={OrdersScreen}
       />
     </Stack.Navigator>
   );
