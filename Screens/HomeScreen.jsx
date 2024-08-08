@@ -457,7 +457,10 @@ const HomeScreen = () => {
                       style={{
                         borderRadius: SPACING / 2,
                         overflow: 'hidden',
-                      }}>
+                      }}
+                      onPress={() =>
+                        navigation.navigate('Info', {id: car._id})
+                      }>
                       <LinearGradient
                         style={{
                           padding: SPACING / 3,

@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import 'react-native-gesture-handler';
-import {Image, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, View, TouchableOpacity, Image} from 'react-native';
 import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import CarsScreen from './Screens/CarsScreen';
 import ProfileScreen from './Screens/ProfileScreen';
 import IlhemScreen from './Screens/IlhemScreen';
+import InfoScreen from './Screens/InfoScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
 import HomeScreen from './Screens/HomeScreen';
@@ -159,6 +160,14 @@ const Stacknav = ({userData}) => {
           title: '', // Hide the title
         }}
       />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+          title: '', // Hide the title
+        }}
+        name="Info"
+        component={InfoScreen}
+      />
     </Stack.Navigator>
   );
 };
@@ -191,9 +200,12 @@ const App = () => {
         if (isAuth === 'true') {
           setIsLoggedIn(true);
           fetchUser(setUserData, setLoading);
+        } else {
+          setLoading(false);
         }
       } catch (error) {
         console.error('Failed to fetch login status:', error);
+        setLoading(false);
       }
     };
 
@@ -201,7 +213,11 @@ const App = () => {
   }, []);
 
   if (loading) {
-    return null;
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
 
   return (
