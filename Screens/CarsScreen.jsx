@@ -11,7 +11,17 @@ import {
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useNavigation} from '@react-navigation/native';
 
+const SPACING = 10;
+const colors = {
+  light: '#f0f0f0',
+  'dark-gray': '#333333',
+  black: '#000000',
+  yellow: '#FFD700',
+};
 const CarsScreen = () => {
   const [cars, setCars] = useState([]);
   const [page, setPage] = useState(1);
@@ -36,7 +46,7 @@ const CarsScreen = () => {
     }
     setLoading(false);
   };
-
+  const navigation = useNavigation();
   const renderItem = ({item}) => (
     <View style={styles.card}>
       <View style={styles.leftSection}>
@@ -76,6 +86,27 @@ const CarsScreen = () => {
           <Icon name="cash-outline" size={20} color="#000" />
           <Text style={styles.details}>${item.prixParJ} /day</Text>
         </View>
+        <TouchableOpacity
+          style={{
+            borderRadius: SPACING / 2,
+            overflow: 'hidden',
+            maxWidth:30,
+            alignSelf: 'flex-end', 
+          }}
+          onPress={() => navigation.navigate('Info', {id: item._id})}>
+          <LinearGradient
+            style={{
+              padding: SPACING / 3,
+              paddingHorizontal: SPACING / 2,
+            }}
+            colors={[colors['dark-gray'], colors.black]}>
+            <Ionicons
+              name="arrow-forward"
+              size={SPACING * 2}
+              color={colors.light}
+            />
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
     </View>
   );
