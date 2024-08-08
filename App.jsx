@@ -143,7 +143,7 @@ const Stacknav = ({userData}) => {
         component={CarsScreen}
         options={{
           headerShown: true,
-          title: '', // Hide the title
+          title: 'Car Listings', // Hide the title
         }}
       />
       <Stack.Screen

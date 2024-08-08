@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -10,28 +10,42 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SPACING = 10;
 const colors = {
-  light: '#f0f0f0',
+  light: '#f8f8f8',
   'dark-gray': '#333333',
   black: '#000000',
   yellow: '#FFD700',
+  green: '#1ECB15',
+  white: '#ffffff',
+  gray: '#666666',
 };
+
 const CarsScreen = () => {
   const [cars, setCars] = useState([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(12); // Number of items per page
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [favourites, setFavourites] = useState(new Set());
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchCars();
   }, [page]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+    }, [])
+  );
 
   const fetchCars = async () => {
     setLoading(true);
@@ -46,68 +60,130 @@ const CarsScreen = () => {
     }
     setLoading(false);
   };
-  const navigation = useNavigation();
+
+  const fetchFavourites = async (userId, token) => {
+    try {
+      const response = await axios.get(
+        `http://192.168.1.185:3001/favorite-cars/client/${userId}`,
+        {
+          headers: {Authorization: `Bearer ${token}`},
+        },
+      );
+      const favouriteCars = response.data.map(fav => fav.idVoiture);
+      setFavourites(new Set(favouriteCars));
+    } catch (error) {
+      console.error('Error fetching favourite cars:', error);
+    }
+  };
+
+  const toggleFavourite = async carId => {
+    const isFavourite = favourites.has(carId);
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const userId = await AsyncStorage.getItem('userId');
+
+      if (!isFavourite) {
+        // Add favorite
+        await axios.post(
+          'http://192.168.1.185:3001/favorite-cars',
+          {
+            idClient: userId,
+            idVoiture: carId,
+          },
+          {
+            headers: {Authorization: `Bearer ${token}`},
+          },
+        );
+        setFavourites(prev => new Set(prev).add(carId));
+      } else {
+        // Remove favorite
+        await axios.delete('http://192.168.1.185:3001/favorite-cars', {
+          data: {idClient: userId, idVoiture: carId},
+          headers: {Authorization: `Bearer ${token}`},
+        });
+        setFavourites(prev => {
+          const newFavourites = new Set(prev);
+          newFavourites.delete(carId);
+          return newFavourites;
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling favourite:', error);
+      Alert.alert(
+        'An error occurred while toggling favourite status:',
+        error.response?.data?.message || error.message,
+      );
+    }
+  };
+
   const renderItem = ({item}) => (
     <View style={styles.card}>
-      <View style={styles.leftSection}>
-        <Text style={styles.title}>
-          {item.marque} {item.modele} {item.anneeFabrication}
-        </Text>
-        <Image
-          source={{uri: item.image}}
-          style={styles.image}
-          onError={() => console.log('Failed to load image:', item.image)}
-        />
+      <View style={styles.cardHeader}>
+        <View style={styles.ratingContainer}>
+          <Ionicons name="star" color={colors.yellow} size={SPACING * 1.6} />
+          <Text style={styles.ratingText}>{item.note}</Text>
+        </View>
+        <TouchableOpacity onPress={() => toggleFavourite(item._id)}>
+          <Ionicons
+            name={favourites.has(item._id) ? 'heart' : 'heart-outline'}
+            color="#000"
+            size={SPACING * 2}
+          />
+        </TouchableOpacity>
       </View>
-      <View style={styles.rightSection}>
+      <Image
+        source={{uri: item.image}}
+        style={styles.image}
+        onError={() => console.log('Failed to load image:', item.image)}
+      />
+      <Text style={styles.title}>
+        {item.marque} {item.modele} {item.anneeFabrication}
+      </Text>
+      <View style={styles.detailsContainer}>
         <View style={styles.detailItem}>
           <MaterialCommunityIcons
             name="car-shift-pattern"
             size={20}
-            color="#000"
+            color={colors.gray}
           />
           <Text style={styles.details}>{item.typeTransmission}</Text>
         </View>
         <View style={styles.detailItem}>
-          <MaterialCommunityIcons name="car-door" size={20} color="#000" />
+          <MaterialCommunityIcons
+            name="car-door"
+            size={20}
+            color={colors.gray}
+          />
           <Text style={styles.details}>{item.NbPortes} Doors</Text>
         </View>
         <View style={styles.detailItem}>
-          <Icon name="speedometer-outline" size={20} color="#000" />
+          <Icon name="speedometer-outline" size={20} color={colors.gray} />
           <Text style={styles.details}>{item.kilometrage} km</Text>
         </View>
         <View style={styles.detailItem}>
-          <Icon name="snow-outline" size={20} color="#000" />
+          <Icon name="snow-outline" size={20} color={colors.gray} />
           <Text style={styles.details}>
             {item.climatisation ? 'A/C' : 'No A/C'}
           </Text>
         </View>
         <View style={styles.detailItem}>
-          <Icon name="cash-outline" size={20} color="#000" />
+          <Icon name="cash-outline" size={20} color={colors.gray} />
           <Text style={styles.details}>${item.prixParJ} /day</Text>
         </View>
-        <TouchableOpacity
-          style={{
-            borderRadius: SPACING / 2,
-            overflow: 'hidden',
-            maxWidth:30,
-            alignSelf: 'flex-end', 
-          }}
-          onPress={() => navigation.navigate('Info', {id: item._id})}>
-          <LinearGradient
-            style={{
-              padding: SPACING / 3,
-              paddingHorizontal: SPACING / 2,
-            }}
-            colors={[colors['dark-gray'], colors.black]}>
-            <Ionicons
-              name="arrow-forward"
-              size={SPACING * 2}
-              color={colors.light}
-            />
-          </LinearGradient>
-        </TouchableOpacity>
       </View>
+      <TouchableOpacity
+        style={styles.infoButton}
+        onPress={() => navigation.navigate('Info', {id: item._id})}>
+        <LinearGradient
+          style={styles.infoButtonGradient}
+          colors={[colors.green, colors['dark-gray']]}>
+          <Ionicons
+            name="arrow-forward"
+            size={SPACING * 2}
+            color={colors.light}
+          />
+        </LinearGradient>
+      </TouchableOpacity>
     </View>
   );
 
@@ -123,11 +199,21 @@ const CarsScreen = () => {
     }
   };
 
+  const fetchUser = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const userId = await AsyncStorage.getItem('userId');
+      await fetchFavourites(userId, token);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Car Listings</Text>
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color={colors.green} />
       ) : (
         <FlatList
           data={cars}
@@ -169,83 +255,97 @@ const CarsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f8f8',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    padding: SPACING * 2,
+    backgroundColor: colors.light,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    marginVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
+    backgroundColor: colors.white,
+    borderRadius: SPACING,
+    padding: SPACING * 1.5,
+    marginVertical: SPACING,
+    shadowColor: colors.black,
     shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 5,
   },
-  leftSection: {
-    flex: 1,
-    justifyContent: 'center',
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  rightSection: {
-    flex: 1,
-    paddingLeft: 10,
+  ratingText: {
+    color: colors.black,
+    marginLeft: SPACING / 2,
+    fontWeight: 'bold',
   },
   image: {
-    width: 150,
-    height: 100,
-    borderRadius: 10,
-    marginVertical: 10,
+    width: '100%',
+    height: 150,
+    borderRadius: SPACING,
+    marginBottom: SPACING,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
+    marginBottom: SPACING,
+    color: colors['dark-gray'],
   },
-  details: {
-    fontSize: 16,
-    color: '#666',
-    marginLeft: 5,
+  detailsContainer: {
+    marginBottom: SPACING,
   },
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 5,
+    marginVertical: SPACING / 2,
+  },
+  details: {
+    fontSize: 16,
+    color: colors.gray,
+    marginLeft: SPACING / 2,
+  },
+  infoButton: {
+    borderRadius: SPACING,
+    overflow: 'hidden',
+    alignSelf: 'center',
+    marginTop: SPACING,
+  },
+  infoButtonGradient: {
+    paddingVertical: SPACING / 3,
+    paddingHorizontal: SPACING * 2,
   },
   pagination: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: SPACING * 2,
   },
   pageButton: {
-    padding: 10,
-    backgroundColor: '#1ECB15',
-    borderRadius: 20,
-    marginHorizontal: 10,
+    padding: SPACING,
+    backgroundColor: colors.green,
+    borderRadius: SPACING,
+    marginHorizontal: SPACING,
   },
   disabledButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: colors.gray,
   },
   pageButtonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: 'bold',
   },
   pageInfo: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors['dark-gray'],
   },
   disabledText: {
-    color: '#aaa',
+    color: colors.light,
   },
 });
 
