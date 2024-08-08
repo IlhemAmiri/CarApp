@@ -5,7 +5,6 @@ import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import CarsScreen from './Screens/CarsScreen';
 import ProfileScreen from './Screens/ProfileScreen';
-import IlhemScreen from './Screens/IlhemScreen';
 import InfoScreen from './Screens/InfoScreen';
 import FavCarScreen from './Screens/FavCarScreen';
 import LoginScreen from './Screens/LoginScreen';
@@ -150,14 +149,6 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{
-          headerShown: true,
-          title: '', // Hide the title
-        }}
-      />
-      <Stack.Screen
-        name="Ilhem"
-        component={IlhemScreen}
         options={{
           headerShown: true,
           title: '', // Hide the title
