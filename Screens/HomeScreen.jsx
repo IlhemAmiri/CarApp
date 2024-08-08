@@ -70,7 +70,7 @@ const HomeScreen = () => {
   useEffect(() => {
     fetchCars();
     fetchUser();
-  }, []);
+  }, [favourites]);
 
   const fetchCars = async () => {
     try {

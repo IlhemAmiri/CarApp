@@ -7,6 +7,7 @@ import CarsScreen from './Screens/CarsScreen';
 import ProfileScreen from './Screens/ProfileScreen';
 import IlhemScreen from './Screens/IlhemScreen';
 import InfoScreen from './Screens/InfoScreen';
+import FavCarScreen from './Screens/FavCarScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
 import HomeScreen from './Screens/HomeScreen';
@@ -181,10 +182,18 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'My Order', // Hide the title
+          title: 'My Order', 
         }}
         name="Orders"
         component={OrdersScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: '', 
+        }}
+        name="FavCar"
+        component={FavCarScreen}
       />
     </Stack.Navigator>
   );
