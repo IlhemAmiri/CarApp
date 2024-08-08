@@ -10,6 +10,7 @@ import InfoScreen from './Screens/InfoScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
 import HomeScreen from './Screens/HomeScreen';
+import BookingScreen from './Screens/BookingScreen';
 import {
   NavigationContainer,
   useNavigation,
@@ -167,6 +168,14 @@ const Stacknav = ({userData}) => {
         }}
         name="Info"
         component={InfoScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+          title: '', // Hide the title
+        }}
+        name="Booking"
+        component={BookingScreen}
       />
     </Stack.Navigator>
   );

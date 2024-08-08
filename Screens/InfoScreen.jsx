@@ -153,7 +153,7 @@ const InfoScreen = ({route, navigation}) => {
           </View>
 
           <TouchableOpacity
-           
+            onPress={() => navigation.navigate('Booking', {id: vehicle._id})}
             style={styles.rentButton}>
             <Text style={styles.rentButtonText}>Rent a Car</Text>
           </TouchableOpacity>
