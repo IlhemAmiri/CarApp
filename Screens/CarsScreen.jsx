@@ -144,7 +144,7 @@ const CarsScreen = () => {
           <MaterialCommunityIcons
             name="car-shift-pattern"
             size={20}
-            color={colors.gray}
+            color="#0086D0"
           />
           <Text style={styles.details}>{item.typeTransmission}</Text>
         </View>
@@ -152,22 +152,22 @@ const CarsScreen = () => {
           <MaterialCommunityIcons
             name="car-door"
             size={20}
-            color={colors.gray}
+            color="#0086D0"
           />
           <Text style={styles.details}>{item.NbPortes} Doors</Text>
         </View>
         <View style={styles.detailItem}>
-          <Icon name="speedometer-outline" size={20} color={colors.gray} />
+          <Icon name="speedometer-outline" size={20} color="#0086D0" />
           <Text style={styles.details}>{item.kilometrage} km</Text>
         </View>
         <View style={styles.detailItem}>
-          <Icon name="snow-outline" size={20} color={colors.gray} />
+          <Icon name="snow-outline" size={20} color="#0086D0" />
           <Text style={styles.details}>
             {item.climatisation ? 'A/C' : 'No A/C'}
           </Text>
         </View>
         <View style={styles.detailItem}>
-          <Icon name="cash-outline" size={20} color={colors.gray} />
+          <Icon name="cash-outline" size={20} color={colors.green} />
           <Text style={styles.details}>${item.prixParJ} /day</Text>
         </View>
       </View>
@@ -176,7 +176,7 @@ const CarsScreen = () => {
         onPress={() => navigation.navigate('Info', {id: item._id})}>
         <LinearGradient
           style={styles.infoButtonGradient}
-          colors={[colors.green, colors['dark-gray']]}>
+          colors={[colors.black, "#616161"]}>
           <Ionicons
             name="arrow-forward"
             size={SPACING * 2}
@@ -328,12 +328,12 @@ const styles = StyleSheet.create({
   },
   pageButton: {
     padding: SPACING,
-    backgroundColor: colors.green,
+    backgroundColor: colors.black,
     borderRadius: SPACING,
     marginHorizontal: SPACING,
   },
   disabledButton: {
-    backgroundColor: colors.gray,
+    backgroundColor: "#bdbdbd",
   },
   pageButtonText: {
     color: colors.white,
