@@ -11,10 +11,20 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const backIcon = require('../assets/left-arrow.png');
 const dotsIcon = require('../assets/dots.png');
-
+const SPACING = 10;
+const colors = {
+  light: '#f8f8f8',
+  'dark-gray': '#333333',
+  black: '#000000',
+  yellow: '#FFD700',
+  green: '#1ECB15',
+  white: '#ffffff',
+  gray: '#666666',
+};
 const InfoScreen = ({route, navigation}) => {
   const [vehicle, setVehicle] = useState(null);
   const {id} = route.params;
@@ -151,7 +161,12 @@ const InfoScreen = ({route, navigation}) => {
               </Text>
             </View>
           </View>
-
+          {vehicle.note > 0 && (
+            <View style={styles.ratingContainer}>
+              <Ionicons name="star" color={colors.yellow} size={SPACING * 2} />
+              <Text style={styles.ratingText}>{vehicle.note}</Text>
+            </View>
+          )}
           <TouchableOpacity
             onPress={() => navigation.navigate('Booking', {id: vehicle._id})}
             style={styles.rentButton}>
@@ -269,6 +284,16 @@ const styles = StyleSheet.create({
   rentButtonText: {
     color: '#FFF',
     fontWeight: '600',
+    fontSize: 16,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ratingText: {
+    color: colors['dark-gray'],
+    marginLeft: SPACING / 2,
+    fontWeight: 'bold',
     fontSize: 16,
   },
 });

@@ -12,7 +12,7 @@ const DrawerList = [
   { icon: 'car-multiple', label: 'cars', navigateTo: 'Cars' },
   { icon: 'account-outline', label: 'Profile', navigateTo: 'Profile' },
   { icon: 'cart-outline', label: 'Orders', navigateTo: 'Orders' },
-  { icon: 'heart-outline', label: 'Favorite', navigateTo: 'FavCar' },
+  { icon: 'heart-outline', label: 'Favorites', navigateTo: 'FavCar' },
 ];
 
 const DrawerLayout = ({ icon, label, navigateTo }) => {

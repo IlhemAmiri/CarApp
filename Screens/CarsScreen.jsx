@@ -44,7 +44,7 @@ const CarsScreen = () => {
   useFocusEffect(
     useCallback(() => {
       fetchUser();
-    }, [])
+    }, []),
   );
 
   const fetchCars = async () => {
@@ -119,14 +119,25 @@ const CarsScreen = () => {
   const renderItem = ({item}) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
-        <View style={styles.ratingContainer}>
-          <Ionicons name="star" color={colors.yellow} size={SPACING * 1.6} />
-          <Text style={styles.ratingText}>{item.note}</Text>
-        </View>
+        {item.note > 0 ? (
+          <View style={styles.ratingContainer}>
+            <Ionicons name="star" color={colors.yellow} size={SPACING * 1.6} />
+            <Text style={styles.ratingText}>{item.note}</Text>
+          </View>
+        ) : (
+          <View style={styles.ratingContainer}>
+            <MaterialCommunityIcons
+              name="star-off-outline"
+              color={colors.yellow}
+              size={SPACING * 2}
+            />
+          </View>
+        )}
+
         <TouchableOpacity onPress={() => toggleFavourite(item._id)}>
           <Ionicons
             name={favourites.has(item._id) ? 'heart' : 'heart-outline'}
-            color="#000"
+            color={favourites.has(item._id) ? colors.green : colors.green}
             size={SPACING * 2}
           />
         </TouchableOpacity>
@@ -139,12 +150,12 @@ const CarsScreen = () => {
       <Text style={styles.title}>
         {item.marque} {item.modele} {item.anneeFabrication}
       </Text>
-      <View style={styles.detailsContainer}>
+      <View style={styles.detailsRow}>
         <View style={styles.detailItem}>
           <MaterialCommunityIcons
             name="car-shift-pattern"
             size={20}
-            color="#0086D0"
+            color={colors.black}
           />
           <Text style={styles.details}>{item.typeTransmission}</Text>
         </View>
@@ -152,31 +163,33 @@ const CarsScreen = () => {
           <MaterialCommunityIcons
             name="car-door"
             size={20}
-            color="#0086D0"
+            color={colors.black}
           />
           <Text style={styles.details}>{item.NbPortes} Doors</Text>
         </View>
+      </View>
+      <View style={styles.detailsRow}>
         <View style={styles.detailItem}>
-          <Icon name="speedometer-outline" size={20} color="#0086D0" />
+          <Icon name="speedometer-outline" size={20} color={colors.black} />
           <Text style={styles.details}>{item.kilometrage} km</Text>
         </View>
         <View style={styles.detailItem}>
-          <Icon name="snow-outline" size={20} color="#0086D0" />
+          <Icon name="snow-outline" size={20} color={colors.black} />
           <Text style={styles.details}>
             {item.climatisation ? 'A/C' : 'No A/C'}
           </Text>
         </View>
-        <View style={styles.detailItem}>
-          <Icon name="cash-outline" size={20} color={colors.green} />
-          <Text style={styles.details}>${item.prixParJ} /day</Text>
-        </View>
+      </View>
+      <View style={styles.detailItem}>
+        <Icon name="cash-outline" size={20} color={colors.black} />
+        <Text style={styles.details}>${item.prixParJ} /day</Text>
       </View>
       <TouchableOpacity
         style={styles.infoButton}
         onPress={() => navigation.navigate('Info', {id: item._id})}>
         <LinearGradient
           style={styles.infoButtonGradient}
-          colors={[colors.black, "#616161"]}>
+          colors={[colors.black, '#616161']}>
           <Ionicons
             name="arrow-forward"
             size={SPACING * 2}
@@ -219,6 +232,7 @@ const CarsScreen = () => {
           data={cars}
           renderItem={renderItem}
           keyExtractor={item => item._id}
+          showsVerticalScrollIndicator={false}
         />
       )}
       <View style={styles.pagination}>
@@ -259,81 +273,89 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light,
   },
   card: {
-    backgroundColor: colors.white,
-    borderRadius: SPACING,
-    padding: SPACING * 1.5,
+    backgroundColor: '#f5f5f5',
+    borderRadius: SPACING * 2,
+    padding: SPACING * 2,
     marginVertical: SPACING,
     shadowColor: colors.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowRadius: 8,
+    elevation: 6,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING,
+    marginBottom: SPACING * 1.5,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   ratingText: {
-    color: colors.black,
+    color: colors['dark-gray'],
     marginLeft: SPACING / 2,
     fontWeight: 'bold',
+    fontSize: 16,
   },
   image: {
     width: '100%',
-    height: 150,
-    borderRadius: SPACING,
-    marginBottom: SPACING,
+    height: 200,
+    borderRadius: SPACING * 2,
+    marginBottom: SPACING * 1.5,
+    backgroundColor: '#e0e0e0', // Fallback color while loading image
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: SPACING,
-    color: colors['dark-gray'],
+    marginBottom: SPACING * 1.5,
+    color: colors.black,
   },
   detailsContainer: {
     marginBottom: SPACING,
   },
+  detailsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: SPACING,
+  },
   detailItem: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: SPACING / 2,
+    marginHorizontal: SPACING / 2,
   },
   details: {
-    fontSize: 16,
-    color: colors.gray,
+    fontSize: 14,
+    color: colors['dark-gray'],
     marginLeft: SPACING / 2,
   },
   infoButton: {
-    borderRadius: SPACING,
+    borderRadius: SPACING * 1.5,
     overflow: 'hidden',
     alignSelf: 'center',
-    marginTop: SPACING,
+    marginTop: SPACING * 2,
   },
   infoButtonGradient: {
     paddingVertical: SPACING / 3,
-    paddingHorizontal: SPACING * 2,
+    paddingHorizontal: SPACING * 3,
   },
   pagination: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: SPACING * 2,
+    marginTop: SPACING * 2.5,
   },
   pageButton: {
-    padding: SPACING,
+    padding: SPACING * 1.2,
     backgroundColor: colors.black,
     borderRadius: SPACING,
     marginHorizontal: SPACING,
   },
   disabledButton: {
-    backgroundColor: "#bdbdbd",
+    backgroundColor: '#bdbdbd',
   },
   pageButtonText: {
     color: colors.white,
