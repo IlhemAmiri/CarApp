@@ -15,7 +15,8 @@ import OrdersScreen from './Screens/OrdersScreen';
 import FaqsScreen from './Screens/FaqsScreen';
 import BlogsScreen from './Screens/BlogsScreen';
 import InfoBlogScreen from './Screens/InfoBlogScreen';
-import AboutScreen from './Screens/AboutScreen'
+import AboutScreen from './Screens/AboutScreen';
+import UpdateProfileScreen from './Screens/UpdateProfileScreen';
 import {
   NavigationContainer,
   useNavigation,
@@ -229,6 +230,14 @@ const Stacknav = ({userData}) => {
         }}
         name="About"
         component={AboutScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: 'Update Your Profile', 
+        }}
+        name="UpdateProfile"
+        component={UpdateProfileScreen}
       />
     </Stack.Navigator>
   );

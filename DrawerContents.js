@@ -37,7 +37,7 @@ const DrawerList = [
     color: '#1E90FF',
   },
   {
-    icon: 'info-circle',
+    icon: 'information-outline',
     label: 'About Us',
     navigateTo: 'About',
     color: '#00CED1',

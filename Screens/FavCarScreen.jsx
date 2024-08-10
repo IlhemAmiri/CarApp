@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     marginBottom: 12,
     borderWidth: 2,
-    borderColor: '#1ECB15',
+    borderColor: '#000',
   },
   profileName: {
     fontSize: 22,
