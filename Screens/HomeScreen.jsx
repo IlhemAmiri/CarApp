@@ -252,7 +252,7 @@ const HomeScreen = () => {
                 colors={item.gradientColors}
                 style={{
                   padding: SPACING * 3,
-                  height: 185,
+                  height: 195,
                   borderRadius: SPACING * 2,
                   flexDirection: 'row',
                   marginBottom: 10,

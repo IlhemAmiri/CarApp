@@ -57,7 +57,7 @@ const Stacknav = ({userData}) => {
     <Stack.Navigator
       initialRouteName="Home"
       screenOptions={{
-        statusBarColor: '#0163d2',
+        statusBarColor: '#000',
         headerStyle: {
           backgroundColor: '#f0f0f0',
         },
@@ -135,6 +135,14 @@ const Stacknav = ({userData}) => {
         component={HomeScreen}
         options={{
           headerShown: true,
+          title: '', // Hide the title
+        }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          headerShown: false,
           title: '', // Hide the title
         }}
       />

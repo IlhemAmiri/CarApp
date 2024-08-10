@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
   caption: {
     fontSize: 14,
     lineHeight: 14,
+    color:'#999',
   },
   drawerSection: {
     marginTop: 15,

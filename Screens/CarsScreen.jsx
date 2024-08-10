@@ -137,7 +137,7 @@ const CarsScreen = () => {
         <TouchableOpacity onPress={() => toggleFavourite(item._id)}>
           <Ionicons
             name={favourites.has(item._id) ? 'heart' : 'heart-outline'}
-            color={favourites.has(item._id) ? colors.green : colors.green}
+            color={favourites.has(item._id) ? 'red' : 'red'}
             size={SPACING * 2}
           />
         </TouchableOpacity>

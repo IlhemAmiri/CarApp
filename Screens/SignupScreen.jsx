@@ -167,6 +167,7 @@ export default function SignupScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="First Name"
+                placeholderTextColor="gray"
                 value={firstName}
                 onChangeText={text => setFirstName(text)}
                 required
@@ -182,6 +183,7 @@ export default function SignupScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Last Name"
+                placeholderTextColor="gray"
                 value={lastName}
                 onChangeText={text => setLastName(text)}
                 required
@@ -197,6 +199,7 @@ export default function SignupScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Email"
+                placeholderTextColor="gray"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
@@ -214,6 +217,7 @@ export default function SignupScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Password"
+                placeholderTextColor="gray"
                 secureTextEntry={!passwordVisible}
                 value={password}
                 onChangeText={text => setPassword(text)}
@@ -243,6 +247,7 @@ export default function SignupScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="CIN"
+                placeholderTextColor="gray"
                 value={cin}
                 onChangeText={text => setCin(text)}
                 required
@@ -258,6 +263,7 @@ export default function SignupScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Passport"
+                placeholderTextColor="gray"
                 value={passport}
                 onChangeText={text => setPassport(text)}
                 required
@@ -273,6 +279,7 @@ export default function SignupScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Address"
+                placeholderTextColor="gray"
                 value={address}
                 onChangeText={text => setAddress(text)}
                 required
@@ -294,6 +301,7 @@ export default function SignupScreen() {
               <TextInput
                 style={styles.phoneInput}
                 placeholder="Phone Number"
+                placeholderTextColor="gray"
                 keyboardType="phone-pad"
                 value={phoneNumber}
                 onChangeText={text => setPhoneNumber(text)}
@@ -315,7 +323,7 @@ export default function SignupScreen() {
               <TouchableOpacity
                 style={styles.input}
                 onPress={() => setShowBirthDatePicker(true)}>
-                <Text>{birthDate.toDateString()}</Text>
+                <Text style={styles.dateText}>{birthDate.toDateString()}</Text>
               </TouchableOpacity>
               {showBirthDatePicker && (
                 <DateTimePicker
@@ -341,6 +349,7 @@ export default function SignupScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Driving License Number"
+                placeholderTextColor="gray"
                 value={drivingLicenseNumber}
                 onChangeText={text => setDrivingLicenseNumber(text)}
                 required
@@ -356,7 +365,7 @@ export default function SignupScreen() {
               <TouchableOpacity
                 style={styles.input}
                 onPress={() => setShowLicenseExpiryPicker(true)}>
-                <Text>{drivingLicenseExpiry.toDateString()}</Text>
+                <Text style={styles.dateText}>{drivingLicenseExpiry.toDateString()}</Text>
               </TouchableOpacity>
               {showLicenseExpiryPicker && (
                 <DateTimePicker
@@ -367,7 +376,7 @@ export default function SignupScreen() {
                 />
               )}
             </View>
-            <TouchableOpacity style={styles.button} onPress={pickImage}>
+            <TouchableOpacity style={styles.buttonup} onPress={pickImage}>
               <Text style={styles.buttonText}>Upload Image</Text>
             </TouchableOpacity>
             {image && (
@@ -446,6 +455,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    color:'#999',
   },
   logo: {
     width: '40%',
@@ -492,6 +502,7 @@ const styles = StyleSheet.create({
     height: 40,
     padding: 8,
     fontSize: 16,
+    color: '#000',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -501,7 +512,14 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#1ECB15',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 20,
+    marginBottom: 20,
+    marginLeft: 20,
+  },
+  buttonup: {
+    backgroundColor: '#000',
+    padding: 10,
+    borderRadius: 20,
     marginBottom: 20,
     marginLeft: 20,
   },
@@ -516,6 +534,7 @@ const styles = StyleSheet.create({
   },
   signInText: {
     marginRight: 5,
+    color:'#999',
   },
   signInButton: {
     color: '#1ECB15',
@@ -555,5 +574,8 @@ const styles = StyleSheet.create({
   googleButtonText: {
     fontSize: 16,
     color: '#333',
+  },
+  dateText: {
+    color: 'gray',
   },
 });

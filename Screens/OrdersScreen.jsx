@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
   orderText: {
     fontSize: 16,
     marginBottom: 5,
+    color:'#000'
   },
   statusText: {
     fontSize: 16,
