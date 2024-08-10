@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#007bff',
+    color: '#000',
   },
   orderContainer: {
     backgroundColor: '#fff',

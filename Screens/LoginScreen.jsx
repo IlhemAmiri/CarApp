@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   logo: {
-    width: '50%',
+    width: '45%',
     height: undefined,
     aspectRatio: 1,
     resizeMode: 'contain',

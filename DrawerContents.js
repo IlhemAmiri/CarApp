@@ -131,7 +131,7 @@ function DrawerContent({setIsLoggedIn, ...props}) {
         <View style={styles.drawerContent}>
           <TouchableOpacity activeOpacity={0.8}>
             <LinearGradient
-              colors={['#004494', '#005BAF', '#4898E7']}
+              colors={['#006200', '#60A23C', '#97DA6F']}
               style={styles.userInfoSection}>
               <View style={{flexDirection: 'row', marginTop: 15}}>
                 <Avatar.Image

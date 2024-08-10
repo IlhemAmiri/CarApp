@@ -37,7 +37,7 @@ const FaqsScreen = () => {
                         <Ionicons
                             name={openIndexes.includes(index) ? 'chevron-up-outline' : 'chevron-down-outline'}
                             size={24}
-                            color="#0086D0"
+                            color="#1ECB15"
                         />
                     </TouchableOpacity>
                     {openIndexes.includes(index) && (
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f4f4f4',
     },
     mainHeading: {
-        color: '#0086D0',
+        color: '#30B21A',
         fontSize: 32,
         fontWeight: '700',
         marginBottom: 20,

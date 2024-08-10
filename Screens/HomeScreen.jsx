@@ -174,21 +174,22 @@ const HomeScreen = () => {
   };
 
   const data = [
+    
     {
       id: 1,
-      discount: '20%',
-      title: 'New Arrival',
-      description: 'Get a new car discount, only valid this Friday',
-      image: require('../assets/bmw.png'),
-      gradientColors: ['#3563E9', '#5CAFFC'],
-    },
-    {
-      id: 2,
       discount: '30%',
       title: 'Electrical Cars',
       description: 'Get a new car discount',
       image: require('../assets/tesla.png'),
       gradientColors: ['#60A23C', '#97DA6F'],
+    },
+    {
+      id: 2,
+      discount: '20%',
+      title: 'New Arrival',
+      description: 'Get a new car discount, only valid this Friday',
+      image: require('../assets/bmw.png'),
+      gradientColors: ['#3563E9', '#5CAFFC'],
     },
     {
       id: 3,

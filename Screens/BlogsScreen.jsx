@@ -76,7 +76,7 @@ const BlogsScreen = () => {
             >
               <LinearGradient
                 style={styles.gradient}
-                colors={[colors.primary, colors.black]}
+                colors={['#1ECB15', colors.black]}
               >
                 <Ionicons
                   name="arrow-forward"
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   category: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: '#007C00',
     marginBottom: SPACING / 2,
   },
   dateAuthor: {

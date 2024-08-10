@@ -85,7 +85,7 @@ function ProfileScreen({navigation}) {
           <Icon
             name="badge"
             size={24}
-            color="#4682B4"
+            color="#004800"
             style={styles.detailIcon}
           />
           <Text style={styles.detailText}>CIN: {userData.CIN}</Text>
@@ -94,7 +94,7 @@ function ProfileScreen({navigation}) {
           <Icon
             name="fingerprint"
             size={24}
-            color="#4682B4"
+            color="#004800"
             style={styles.detailIcon}
           />
           <Text style={styles.detailText}>Passport: {userData.passport}</Text>
@@ -105,7 +105,7 @@ function ProfileScreen({navigation}) {
           <Icon
             name="home"
             size={24}
-            color="#4682B4"
+            color="#004800"
             style={styles.detailIcon}
           />
           <Text style={styles.detailText}>Address: {userData.adresse}</Text>
@@ -114,7 +114,7 @@ function ProfileScreen({navigation}) {
           <Icon
             name="phone"
             size={24}
-            color="#4682B4"
+            color="#004800"
             style={styles.detailIcon}
           />
           <Text style={styles.detailText}>Phone: {userData.numTel}</Text>
@@ -125,7 +125,7 @@ function ProfileScreen({navigation}) {
           <Icon
             name="directions-car"
             size={24}
-            color="#4682B4"
+            color="#004800"
             style={styles.detailIcon}
           />
           <Text style={styles.detailText}>
@@ -136,7 +136,7 @@ function ProfileScreen({navigation}) {
           <Icon
             name="event-busy"
             size={24}
-            color="#4682B4"
+            color="#004800"
             style={styles.detailIcon}
           />
           <Text style={styles.detailText}>
@@ -148,7 +148,7 @@ function ProfileScreen({navigation}) {
           <Icon
             name="calendar-today"
             size={24}
-            color="#4682B4"
+            color="#004800"
             style={styles.detailIcon}
           />
           <Text style={styles.detailText}>
@@ -162,7 +162,7 @@ function ProfileScreen({navigation}) {
           }>
           <LinearGradient
             style={styles.gradient}
-            colors={['#4682B4', '#1E2126']}>
+            colors={['#1ECB15','#006200']}>
             <Text style={styles.textupdate}> Update Your Profile </Text>
             <Ionicons name="arrow-forward" size={24} color="#FFFFFF" />
           </LinearGradient>
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 15,
     borderWidth: 3,
-    borderColor: '#4682B4',
+    borderColor: '#1ECB15',
   },
   profileName: {
     fontSize: 26,
