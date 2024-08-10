@@ -1,29 +1,59 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
-import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { Avatar, Title } from 'react-native-paper';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet, Text, ActivityIndicator} from 'react-native';
+import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
+import {Avatar, Title} from 'react-native-paper';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LinearGradient from 'react-native-linear-gradient'; // Pour le dégradé de couleur
 
 const DrawerList = [
-  { icon: 'home-outline', label: 'Home', navigateTo: 'Home' },
-  { icon: 'car-multiple', label: 'cars', navigateTo: 'Cars' },
-  { icon: 'account-outline', label: 'Profile', navigateTo: 'Profile' },
-  { icon: 'cart-outline', label: 'Orders', navigateTo: 'Orders' },
-  { icon: 'heart-outline', label: 'Favorites', navigateTo: 'FavCar' },
+  {icon: 'home-outline', label: 'Home', navigateTo: 'Home', color: '#FF6347'},
+  {icon: 'car-multiple', label: 'Cars', navigateTo: 'Cars', color: '#4682B4'},
+  {
+    icon: 'account-outline',
+    label: 'Profile',
+    navigateTo: 'Profile',
+    color: '#32CD32',
+  },
+  {
+    icon: 'cart-outline',
+    label: 'Orders',
+    navigateTo: 'Orders',
+    color: '#FFD700',
+  },
+  {
+    icon: 'heart-outline',
+    label: 'Favoris',
+    navigateTo: 'FavCar',
+    color: '#FF4500',
+  },
+  {icon: 'book-outline', label: 'Blogs', navigateTo: 'Blogs', color: '#9370DB'},
+  {
+    icon: 'help-circle-outline',
+    label: 'FAQs',
+    navigateTo: 'Faqs',
+    color: '#1E90FF',
+  },
+  {
+    icon: 'info-circle',
+    label: 'About Us',
+    navigateTo: 'About',
+    color: '#00CED1',
+  },
 ];
 
-const DrawerLayout = ({ icon, label, navigateTo }) => {
+const DrawerLayout = ({icon, label, navigateTo, color}) => {
   const navigation = useNavigation();
   return (
     <DrawerItem
-      icon={({ color, size }) => <Icon name={icon} color={color} size={size} />}
-      label={label}
+      icon={({size}) => <Icon name={icon} color={color} size={size} />}
+      label={() => <Text style={styles.drawerLabel}>{label}</Text>}
       onPress={() => {
         navigation.navigate(navigateTo);
       }}
+      style={styles.drawerItem}
     />
   );
 };
@@ -35,11 +65,12 @@ const DrawerItems = () => {
       icon={el.icon}
       label={el.label}
       navigateTo={el.navigateTo}
+      color={el.color}
     />
   ));
 };
 
-function DrawerContent({ setIsLoggedIn, ...props }) {
+function DrawerContent({setIsLoggedIn, ...props}) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
@@ -49,13 +80,16 @@ function DrawerContent({ setIsLoggedIn, ...props }) {
       try {
         const token = await AsyncStorage.getItem('token');
         const userId = await AsyncStorage.getItem('userId');
-        const response = await fetch(`http://192.168.1.185:3001/users/clients/${userId}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          `http://192.168.1.185:3001/users/clients/${userId}`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
           },
-        });
+        );
 
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
@@ -92,25 +126,30 @@ function DrawerContent({ setIsLoggedIn, ...props }) {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <DrawerContentScrollView {...props}>
+    <View style={{flex: 1}}>
+      <DrawerContentScrollView {...props} contentContainerStyle={{paddingTop: 0}}>
         <View style={styles.drawerContent}>
           <TouchableOpacity activeOpacity={0.8}>
-            <View style={styles.userInfoSection}>
-              <View style={{ flexDirection: 'row', marginTop: 15 }}>
+            <LinearGradient
+              colors={['#004494', '#005BAF', '#4898E7']}
+              style={styles.userInfoSection}>
+              <View style={{flexDirection: 'row', marginTop: 15}}>
                 <Avatar.Image
-                  source={{ uri: userData?.image || 'https://via.placeholder.com/50' }}
-                  size={50}
-                  style={{ marginTop: 5 }}
+                  source={{
+                    uri: userData?.image || 'https://via.placeholder.com/50',
+                  }}
+                  size={70}
                 />
-                <View style={{ marginLeft: 10, flexDirection: 'column' }}>
-                  <Title style={styles.title}>{userData?.prenom} {userData?.nom}</Title>
+                <View style={{marginLeft: 25, flexDirection: 'column'}}>
+                  <Title style={styles.title}>
+                    {userData?.prenom} {userData?.nom}
+                  </Title>
                   <Text style={styles.caption} numberOfLines={1}>
                     {userData?.email}
                   </Text>
                 </View>
               </View>
-            </View>
+            </LinearGradient>
           </TouchableOpacity>
           <View style={styles.drawerSection}>
             <DrawerItems />
@@ -119,8 +158,16 @@ function DrawerContent({ setIsLoggedIn, ...props }) {
       </DrawerContentScrollView>
       <View>
         <DrawerItem
-          icon={({ color, size }) => <Icon name="exit-to-app" color={color} size={size} />}
+          icon={({size}) => (
+            <Icon
+              name="exit-to-app"
+              color="#FF4500"
+              size={size}
+              style={styles.icon3D}
+            />
+          )}
           label="Sign Out"
+          labelStyle={styles.signOutLabel}
           onPress={handleSignOut}
         />
       </View>
@@ -134,26 +181,37 @@ const styles = StyleSheet.create({
   },
   userInfoSection: {
     paddingLeft: 20,
+    paddingVertical: 25,
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     marginTop: 3,
     fontWeight: 'bold',
+    color: '#FFF',
   },
   caption: {
     fontSize: 14,
     lineHeight: 14,
-    color:'#999',
+    color: '#FFF',
   },
   drawerSection: {
-    marginTop: 15,
-    borderTopColor: '#f4f4f4',
-    borderTopWidth: 1,
+    marginTop: 25,
   },
   loaderContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  drawerLabel: {
+    fontSize: 16,
+    color: '#000',
+  },
+  signOutLabel: {
+    color: '#FF4500',
+  },
+  drawerItem: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#eeeeee',
   },
 });
 

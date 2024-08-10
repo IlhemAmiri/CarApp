@@ -12,6 +12,10 @@ import SignupScreen from './Screens/SignupScreen';
 import HomeScreen from './Screens/HomeScreen';
 import BookingScreen from './Screens/BookingScreen';
 import OrdersScreen from './Screens/OrdersScreen';
+import FaqsScreen from './Screens/FaqsScreen';
+import BlogsScreen from './Screens/BlogsScreen';
+import InfoBlogScreen from './Screens/InfoBlogScreen';
+import AboutScreen from './Screens/AboutScreen'
 import {
   NavigationContainer,
   useNavigation,
@@ -193,6 +197,38 @@ const Stacknav = ({userData}) => {
         }}
         name="FavCar"
         component={FavCarScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: 'Blog Posts', 
+        }}
+        name="Blogs"
+        component={BlogsScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: '', 
+        }}
+        name="Faqs"
+        component={FaqsScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+          title: '', 
+        }}
+        name="InfoBlog"
+        component={InfoBlogScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: '', 
+        }}
+        name="About"
+        component={AboutScreen}
       />
     </Stack.Navigator>
   );
