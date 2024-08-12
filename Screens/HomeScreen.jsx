@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   StyleSheet,
   FlatList,
@@ -10,15 +10,19 @@ import {
   TouchableOpacity,
   Dimensions,
   Alert,
+  Animated,
+  Easing,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ScrollView} from 'react-native-gesture-handler';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
+import moment from 'moment';
+import FastImage from 'react-native-fast-image';
 
 const avatar = require('../assets/avatar.jpg');
 const SPACING = 10;
@@ -37,6 +41,7 @@ const HomeScreen = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [noveltyCars, setNoveltyCars] = useState([]);
 
   const handleScroll = event => {
     const index = Math.round(
@@ -70,6 +75,7 @@ const HomeScreen = () => {
   useEffect(() => {
     fetchCars();
     fetchUser();
+    fetchNoveltyCars();
   }, [favourites]);
 
   const fetchCars = async () => {
@@ -174,7 +180,6 @@ const HomeScreen = () => {
   };
 
   const data = [
-    
     {
       id: 1,
       discount: '30%',
@@ -200,6 +205,41 @@ const HomeScreen = () => {
       gradientColors: ['#965A33', '#a1887f'],
     },
   ];
+  const fetchNoveltyCars = async () => {
+    try {
+      const response = await axios.get(
+        'http://192.168.1.185:3001/cars?page=1&limit=3&sort=created_at:desc',
+      );
+      setNoveltyCars(response.data.data);
+    } catch (error) {
+      console.error('Error fetching novelty cars:', error);
+    }
+  };
+
+  const colorAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(colorAnim, {
+        toValue: 1,
+        duration: 3600,
+        easing: Easing.linear,
+        useNativeDriver: false,
+      }),
+    ).start();
+  }, [colorAnim]);
+
+  const backgroundColor = colorAnim.interpolate({
+    inputRange: [0, 0.2, 0.4, 0.6, 0.8, 1],
+    outputRange: [
+      '#1ECB15',
+      '#3baea0',
+      '#118a7e',
+      '#2c5d63',
+      '#1f6f78',
+      '#1ECB15',
+    ],
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -239,7 +279,7 @@ const HomeScreen = () => {
             fontWeight: '600',
             marginBottom: 10,
           }}>
-          Our Offres
+          Top Deals
         </Text>
         <View>
           <FlatList
@@ -327,6 +367,7 @@ const HomeScreen = () => {
                   borderRadius: SPACING / 2,
                   backgroundColor: index === activeIndex ? '#000' : '#D3D3D3',
                   marginHorizontal: SPACING / 2,
+                  marginBottom: 25,
                 }}
               />
             ))}
@@ -348,7 +389,7 @@ const HomeScreen = () => {
                 fontSize: SPACING * 2.5,
                 fontWeight: '600',
               }}>
-              Top Deals
+              Our Cars
             </Text>
             <TouchableOpacity onPress={navigateToCars}>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -480,6 +521,119 @@ const HomeScreen = () => {
               ))}
           </View>
         </View>
+        {/* Novelty Section */}
+        <View style={styles.noveltySection}>
+          <View style={styles.noveltyTitleWrapper}>
+            <Text style={styles.noveltyTitle}>Latest Additions</Text>
+          </View>
+
+          <FlatList
+            data={noveltyCars}
+            keyExtractor={item => item._id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                style={styles.noveltyCard}
+                onPress={() => navigation.navigate('Info', {id: item._id})}
+                activeOpacity={0.95}>
+                <View style={styles.noveltyCardImageWrapper}>
+                  <Image
+                    source={{uri: item.image}}
+                    style={styles.noveltyImage}
+                  />
+                  <Animated.View
+                    style={[styles.noveltyBadge, {backgroundColor}]}>
+                    <Text style={styles.noveltyBadgeText}>New</Text>
+                  </Animated.View>
+                  <TouchableOpacity
+                    style={styles.noveltyFavouriteButton}
+                    onPress={() => toggleFavourite(item._id)}>
+                    <View style={styles.iconBackground}>
+                      <Ionicons
+                        name={
+                          favourites.has(item._id) ? 'heart' : 'heart-outline'
+                        }
+                        color={colors.black}
+                        size={SPACING * 2}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.noveltyInfo}>
+                  <Text style={styles.noveltyCarName}>
+                    {item.marque} {item.modele}
+                  </Text>
+                  <Text style={styles.noveltyCarCategory}>
+                    {item.categorie}
+                  </Text>
+                  <View style={styles.noveltyAttributes}>
+                    <View style={styles.noveltyAttribute}>
+                      <Image
+                        source={require('../assets/Miles.png')}
+                        style={styles.noveltyAttributeIcon}
+                      />
+                      <Text style={styles.noveltyAttributeText}>
+                        {item.kilometrage} Miles
+                      </Text>
+                    </View>
+                    <View style={styles.noveltyAttribute}>
+                      <Image
+                        source={require('../assets/Petrol.png')}
+                        style={styles.noveltyAttributeIcon}
+                      />
+                      <Text style={styles.noveltyAttributeText}>
+                        {item.typeCarburant}
+                      </Text>
+                    </View>
+                    <View style={styles.noveltyAttribute}>
+                      <Image
+                        source={require('../assets/Automatic.png')}
+                        style={styles.noveltyAttributeIcon}
+                      />
+                      <Text style={styles.noveltyAttributeText}>
+                        {item.typeTransmission}
+                      </Text>
+                    </View>
+                    <View style={styles.noveltyAttribute}>
+                      <Image
+                        source={require('../assets/cal.png')}
+                        style={styles.noveltyAttributeIcon}
+                      />
+                      <Text style={styles.noveltyAttributeText}>
+                        {item.anneeFabrication}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.noveltyFooter}>
+                    <Text style={styles.noveltyPrice}>${item.prixParJ}</Text>
+                    <TouchableOpacity
+                      style={{
+                        borderRadius: SPACING / 2,
+                        overflow: 'hidden',
+                      }}
+                      onPress={() =>
+                        navigation.navigate('Info', {id: item._id})
+                      }>
+                      <LinearGradient
+                        style={{
+                          padding: SPACING / 3,
+                          paddingHorizontal: SPACING / 2,
+                        }}
+                        colors={[colors['dark-gray'], colors.black]}>
+                        <Ionicons
+                          name="arrow-forward"
+                          size={SPACING * 2}
+                          color={colors.light}
+                        />
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
         <View style={styles.brandSection}>
           <Text style={styles.brandTitle}>Brands</Text>
           <FlatList
@@ -511,7 +665,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#000',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   brandList: {
     paddingBottom: 20,
@@ -542,5 +696,140 @@ const styles = StyleSheet.create({
   brandCount: {
     color: '#1E90FF',
     fontWeight: 'bold',
+  },
+  noveltyCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: SPACING * 2,
+    padding: 0,
+    marginRight: SPACING * 2,
+    width: width / 1.5 - SPACING * 2, // Reduced width
+    //height: 340, // Set height to 300
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    overflow: 'hidden',
+    marginBottom: SPACING * 2,
+    transform: [{scale: 1}],
+  },
+  noveltyTitleWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+
+  noveltyTitle: {
+    color: colors.black,
+    fontSize: SPACING * 2.5,
+    fontWeight: '600',
+    marginBottom: 20,
+  },
+  noveltyCardImageWrapper: {
+    position: 'relative',
+  },
+  noveltyImage: {
+    width: '100%',
+    height: 140, // Reduced image height
+    borderTopLeftRadius: SPACING * 2,
+    borderTopRightRadius: SPACING * 2,
+  },
+  noveltyBadge: {
+    position: 'absolute',
+    top: SPACING,
+    left: SPACING,
+    backgroundColor: '#1ECB15',
+    borderRadius: 15,
+    paddingVertical: SPACING / 3,
+    paddingHorizontal: SPACING * 1.5,
+  },
+  noveltyBadgeText: {
+    color: '#FFF',
+    fontSize: SPACING * 1.35,
+    fontWeight: '600',
+  },
+  noveltyFavouriteButton: {
+    position: 'absolute',
+    top: SPACING / 1.5,
+    right: SPACING / 1.5,
+  },
+  noveltyInfo: {
+    padding: SPACING * 1.5,
+  },
+  noveltyCarName: {
+    fontSize: SPACING * 2, // Slightly reduced font size
+    fontWeight: '700',
+    marginBottom: SPACING / 2,
+    color: '#000',
+  },
+  noveltyCarCategory: {
+    fontSize: SPACING * 1.4, // Slightly reduced font size
+    marginBottom: SPACING,
+    color: '#000',
+  },
+  noveltyAttributes: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', // Ensure items are spaced out evenly
+    flexWrap: 'wrap',
+    marginBottom: SPACING,
+    width: '100%',
+  },
+  noveltyAttributes: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: SPACING,
+    justifyContent: 'space-between', // Ensure space between rows
+  },
+  noveltyAttribute: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING / 2,
+    width: '48%', // Adjust width to ensure two columns
+  },
+  noveltyAttributeIcon: {
+    width: SPACING * 1.8, // Reduced icon size
+    height: SPACING * 1.8, // Reduced icon size
+    marginRight: SPACING / 2,
+    alignSelf: 'center',
+  },
+  noveltyAttributeText: {
+    fontSize: SPACING * 1.4, // Reduced text size
+    alignSelf: 'center',
+  },
+
+  noveltyFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#E9E9E9',
+    paddingTop: SPACING,
+    marginTop: SPACING,
+  },
+  noveltyPrice: {
+    fontSize: SPACING * 2, // Slightly reduced font size
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  noveltyDetailsText: {
+    color: '#1ECB15',
+    fontSize: SPACING * 1.8, // Slightly reduced font size
+    fontWeight: '600',
+    marginRight: SPACING / 2,
+  },
+  noveltyDetailsLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  noveltyDetailsIcon: {
+    marginLeft: SPACING / 2,
+  },
+  iconBackground: {
+    backgroundColor: '#FFF', 
+    borderRadius: SPACING * 2 ,
+    padding: SPACING / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

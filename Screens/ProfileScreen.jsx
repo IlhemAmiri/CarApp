@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   StyleSheet,
   Text,
@@ -17,7 +18,8 @@ function ProfileScreen({navigation}) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useFocusEffect(
+    React.useCallback(() => {
     const fetchUserData = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
@@ -47,7 +49,8 @@ function ProfileScreen({navigation}) {
     };
 
     fetchUserData();
-  }, []);
+  }, [])
+);
 
   if (loading) {
     return (

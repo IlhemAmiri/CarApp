@@ -270,7 +270,7 @@ const App = () => {
         const isAuth = await AsyncStorage.getItem('isAuth');
         if (isAuth === 'true') {
           setIsLoggedIn(true);
-          fetchUser(setUserData, setLoading);
+          await fetchUser(setUserData, setLoading); 
         } else {
           setLoading(false);
         }
