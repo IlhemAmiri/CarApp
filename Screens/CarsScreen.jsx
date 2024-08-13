@@ -201,7 +201,7 @@ const CarsScreen = () => {
           <MaterialCommunityIcons
             name="car-shift-pattern"
             size={20}
-            color={colors.black}
+             color='#000'
           />
           <Text style={styles.details}>{item.typeTransmission}</Text>
         </View>
@@ -209,25 +209,25 @@ const CarsScreen = () => {
           <MaterialCommunityIcons
             name="car-door"
             size={20}
-            color={colors.black}
+            color='#3f4a61'
           />
           <Text style={styles.details}>{item.NbPortes} Doors</Text>
         </View>
       </View>
       <View style={styles.detailsRow}>
         <View style={styles.detailItem}>
-          <Icon name="speedometer-outline" size={20} color={colors.black} />
+          <Icon name="speedometer-outline" size={20}  color='#000' />
           <Text style={styles.details}>{item.kilometrage} km</Text>
         </View>
         <View style={styles.detailItem}>
-          <Icon name="snow-outline" size={20} color={colors.black} />
+          <Icon name="snow-outline" size={20}  color='#448ee4'/>
           <Text style={styles.details}>
             {item.climatisation ? 'A/C' : 'No A/C'}
           </Text>
         </View>
       </View>
       <View style={styles.detailItem}>
-        <Icon name="cash-outline" size={20} color={colors.black} />
+        <Icon name="cash-outline" size={20}  color='#7b9a6d' />
         <Text style={styles.details}>${item.prixParJ} /day</Text>
       </View>
       <TouchableOpacity
