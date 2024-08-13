@@ -201,33 +201,29 @@ const CarsScreen = () => {
           <MaterialCommunityIcons
             name="car-shift-pattern"
             size={20}
-             color='#000'
+            color="#000"
           />
           <Text style={styles.details}>{item.typeTransmission}</Text>
         </View>
         <View style={styles.detailItem}>
-          <MaterialCommunityIcons
-            name="car-door"
-            size={20}
-            color='#3f4a61'
-          />
+          <MaterialCommunityIcons name="car-door" size={20} color="#3f4a61" />
           <Text style={styles.details}>{item.NbPortes} Doors</Text>
         </View>
       </View>
       <View style={styles.detailsRow}>
         <View style={styles.detailItem}>
-          <Icon name="speedometer-outline" size={20}  color='#000' />
+          <Icon name="speedometer-outline" size={20} color="#000" />
           <Text style={styles.details}>{item.kilometrage} km</Text>
         </View>
         <View style={styles.detailItem}>
-          <Icon name="snow-outline" size={20}  color='#448ee4'/>
+          <Icon name="snow-outline" size={20} color="#448ee4" />
           <Text style={styles.details}>
             {item.climatisation ? 'A/C' : 'No A/C'}
           </Text>
         </View>
       </View>
       <View style={styles.detailItem}>
-        <Icon name="cash-outline" size={20}  color='#7b9a6d' />
+        <Icon name="cash-outline" size={20} color="#7b9a6d" />
         <Text style={styles.details}>${item.prixParJ} /day</Text>
       </View>
       <TouchableOpacity
@@ -273,9 +269,8 @@ const CarsScreen = () => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.filterButton}
-        onPress={() => setDrawerVisible(true)}
-      >
-         <Icon name="filter-outline" size={20} color={colors.white} />
+        onPress={() => setDrawerVisible(true)}>
+        <Icon name="filter-outline" size={20} color={colors.white} />
         <Text style={styles.filterButtonText}> Filter</Text>
       </TouchableOpacity>
 
@@ -321,8 +316,7 @@ const CarsScreen = () => {
         visible={isDrawerVisible}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => setDrawerVisible(false)}
-      >
+        onRequestClose={() => setDrawerVisible(false)}>
         <FilterDrawer
           vehicleType={vehicleType}
           bodyType={bodyType}
@@ -420,7 +414,8 @@ const styles = StyleSheet.create({
     marginTop: SPACING * 2.5,
   },
   pageButton: {
-    padding: SPACING * 1.2,
+    paddingVertical: SPACING * 0.6,
+    paddingHorizontal: SPACING * 1.5,
     backgroundColor: colors.black,
     borderRadius: SPACING,
     marginHorizontal: SPACING,
