@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   groupTitle: {
     fontSize: 18,
     color: '#333',
-    marginBottom: 15,
+    marginBottom: 5,
   },
   radioButtonsRow: {
     flexDirection: 'row',
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   radioButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 5,
   },
   radioButtonText: {
     fontSize: 17,

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -15,6 +16,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FilterDrawer from '../FilterDrawer';
 
 const SPACING = 10;
 const colors = {
@@ -34,24 +36,52 @@ const CarsScreen = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [favourites, setFavourites] = useState(new Set());
+  const [vehicleType, setVehicleType] = useState([]);
+  const [bodyType, setBodyType] = useState([]);
+  const [seats, setSeats] = useState([]);
+  const [priceRange, setPriceRange] = useState([0, 100000]);
+  const [isDrawerVisible, setDrawerVisible] = useState(false);
 
   const navigation = useNavigation();
 
   useEffect(() => {
     fetchCars();
-  }, [page]);
+  }, [vehicleType, bodyType, seats, priceRange, page]);
 
   useFocusEffect(
     useCallback(() => {
       fetchUser();
     }, []),
   );
+  const CheckBoxRow = ({children}) => (
+    <View style={styles.checkboxRow}>{children}</View>
+  );
+
+  const CheckBox = ({label, value, onChange}) => (
+    <TouchableOpacity onPress={onChange} style={styles.checkboxContainer}>
+      <View style={[styles.checkbox, value && styles.checkboxChecked]}>
+        {value && <Ionicons name="checkmark" size={14} color={colors.white} />}
+      </View>
+      <Text style={styles.checkboxLabel}>{label}</Text>
+    </TouchableOpacity>
+  );
 
   const fetchCars = async () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://192.168.1.185:3001/cars?page=${page}&limit=${limit}`,
+        `http://192.168.1.185:3001/cars/recherche/check`,
+        {
+          params: {
+            page,
+            limit,
+            vehicleType: vehicleType.join(','),
+            bodyType: bodyType.join(','),
+            seats: seats.join(','),
+            minPrice: priceRange[0],
+            maxPrice: priceRange[1],
+          },
+        },
       );
       setCars(response.data.data);
       setTotal(response.data.total);
@@ -59,6 +89,22 @@ const CarsScreen = () => {
       console.error('Error fetching cars:', error);
     }
     setLoading(false);
+  };
+
+  const toggleVehicleType = type => {
+    setVehicleType(prev => (prev.includes(type) ? [] : [type]));
+  };
+
+  const toggleBodyType = type => {
+    setBodyType(prev => (prev.includes(type) ? [] : [type]));
+  };
+
+  const toggleSeats = seatCount => {
+    setSeats(prev => (prev.includes(seatCount) ? [] : [seatCount]));
+  };
+
+  const setPrice = (min, max) => {
+    setPriceRange([min, max]);
   };
 
   const fetchFavourites = async (userId, token) => {
@@ -225,6 +271,14 @@ const CarsScreen = () => {
   };
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.filterButton}
+        onPress={() => setDrawerVisible(true)}
+      >
+         <Icon name="filter-outline" size={20} color={colors.white} />
+        <Text style={styles.filterButtonText}> Filter</Text>
+      </TouchableOpacity>
+
       {loading ? (
         <ActivityIndicator size="large" color={colors.green} />
       ) : (
@@ -262,6 +316,23 @@ const CarsScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
+      {/* The Filter Drawer Modal */}
+      <Modal
+        visible={isDrawerVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setDrawerVisible(false)}
+      >
+        <FilterDrawer
+          vehicleType={vehicleType}
+          bodyType={bodyType}
+          seats={seats}
+          toggleVehicleType={toggleVehicleType}
+          toggleBodyType={toggleBodyType}
+          toggleSeats={toggleSeats}
+          onClose={() => setDrawerVisible(false)}
+        />
+      </Modal>
     </View>
   );
 };
@@ -368,6 +439,20 @@ const styles = StyleSheet.create({
   },
   disabledText: {
     color: colors.light,
+  },
+  filterButton: {
+    padding: 10,
+    backgroundColor: colors.black,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  filterButtonText: {
+    color: colors.white,
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
 });
 
