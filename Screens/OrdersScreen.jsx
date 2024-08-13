@@ -166,27 +166,34 @@ const OrdersScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.radioButtonsContainer}>
+      <Text style={styles.groupTitle}>Reservation Status</Text>
         <RadioButton.Group
           onValueChange={value => {
             setSelectedStatus(value);
             setCurrentPage(1);
           }}
           value={selectedStatus}>
-          <View style={styles.radioButton}>
-            <RadioButton value="confirmer" color="#00B74A" />
-            <Text style={styles.radioButtonText}>Confirmed Reservation</Text>
-          </View>
-          <View style={styles.radioButton}>
-            <RadioButton value="annuler" color="#F93154" />
-            <Text style={styles.radioButtonText}>Cancelled Reservation</Text>
-          </View>
-          <View style={styles.radioButton}>
-            <RadioButton value="en Attent" color="#FFA900" />
-            <Text style={styles.radioButtonText}>Scheduled Reservation</Text>
-          </View>
-          <View style={styles.radioButton}>
-            <RadioButton value="past" color="#007bff" />
-            <Text style={styles.radioButtonText}>Past Reservation</Text>
+          <View style={styles.radioButtonsRow}>
+            <View style={styles.radioButtonColumn}>
+              <View style={styles.radioButton}>
+                <RadioButton value="confirmer" color="#00B74A" />
+                <Text style={styles.radioButtonText}>Confirmed</Text>
+              </View>
+              <View style={styles.radioButton}>
+                <RadioButton value="annuler" color="#F93154" />
+                <Text style={styles.radioButtonText}>Cancelled</Text>
+              </View>
+            </View>
+            <View style={styles.radioButtonColumn}>
+              <View style={styles.radioButton}>
+                <RadioButton value="en Attent" color="#FFA900" />
+                <Text style={styles.radioButtonText}>Scheduled</Text>
+              </View>
+              <View style={styles.radioButton}>
+                <RadioButton value="past" color="#007bff" />
+                <Text style={styles.radioButtonText}>Past</Text>
+              </View>
+            </View>
           </View>
         </RadioButton.Group>
       </View>
@@ -231,18 +238,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  radioButtonsContainer: {
-    marginBottom: 20,
-    padding: 15,
-    backgroundColor: '#ffffff', 
-    borderRadius: 12, 
-    borderWidth: 1, 
-    borderColor: '#e0e0e0', 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+  groupTitle: {
+    fontSize: 18,
+    color: '#333',
+    marginBottom: 15,
+  },
+  radioButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  radioButtonColumn: {
+    flex: 1,
   },
   radioButton: {
     flexDirection: 'row',
@@ -251,8 +257,21 @@ const styles = StyleSheet.create({
   },
   radioButtonText: {
     fontSize: 17,
-    color: '#333', 
+    color: '#333',
     marginLeft: 8,
+  },
+  radioButtonsContainer: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   orderContainer: {
     backgroundColor: '#fff',
@@ -324,9 +343,8 @@ const styles = StyleSheet.create({
     color: '#000',
     textAlign: 'center',
     marginHorizontal: 10,
-    marginTop:10,
+    marginTop: 10,
   },
-  
 });
 
 export default OrdersScreen;
