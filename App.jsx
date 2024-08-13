@@ -17,6 +17,7 @@ import BlogsScreen from './Screens/BlogsScreen';
 import InfoBlogScreen from './Screens/InfoBlogScreen';
 import AboutScreen from './Screens/AboutScreen';
 import UpdateProfileScreen from './Screens/UpdateProfileScreen';
+import BrandScreen from './Screens/BrandScreen';
 import {
   NavigationContainer,
   useNavigation,
@@ -238,6 +239,14 @@ const Stacknav = ({userData}) => {
         }}
         name="UpdateProfile"
         component={UpdateProfileScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: '', 
+        }}
+        name="BrandScreen"
+        component={BrandScreen}
       />
     </Stack.Navigator>
   );

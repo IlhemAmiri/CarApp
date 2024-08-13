@@ -15,14 +15,12 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ScrollView} from 'react-native-gesture-handler';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
-import moment from 'moment';
-import FastImage from 'react-native-fast-image';
+
 
 const avatar = require('../assets/avatar.jpg');
 const SPACING = 10;
@@ -68,6 +66,11 @@ const HomeScreen = () => {
     {
       name: 'Porsche',
       logo: 'https://logos-world.net/wp-content/uploads/2021/06/Porsche-Logo.png',
+      count: 8,
+    },
+    {
+      name: 'BMW',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/768px-BMW.svg.png',
       count: 8,
     },
   ]);
@@ -163,15 +166,24 @@ const HomeScreen = () => {
       );
     }
   };
-  const renderBrandItem = ({item}) => (
-    <LinearGradient
-      colors={['#fff', '#fff']} // Gradient colors
-      style={styles.brandCard}>
-      <Image source={{uri: item.logo}} style={styles.brandLogo} />
-      <Text style={styles.brandText}>{item.name}</Text>
-      <Text style={styles.brandCount}>+{item.count}</Text>
-    </LinearGradient>
-  );
+
+  
+  const renderBrandItem = ({ item }) => {
+    const handleBrandPress = () => {
+      navigation.navigate('BrandScreen', { marque: item.name });
+    };
+  
+    return (
+      <TouchableOpacity onPress={handleBrandPress}>
+        <LinearGradient colors={['#fff', '#fff']} style={styles.brandCard}>
+          <Image source={{ uri: item.logo }} style={styles.brandLogo} />
+          <Text style={styles.brandText}>{item.name}</Text>
+          <Text style={styles.brandCount}>+{item.count}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  };
+  
 
   const navigation = useNavigation();
 
@@ -635,7 +647,7 @@ const HomeScreen = () => {
           />
         </View>
         <View style={styles.brandSection}>
-          <Text style={styles.brandTitle}>Brands</Text>
+          <Text style={styles.brandTitle}>Premium Brands</Text>
           <FlatList
             data={brands}
             renderItem={renderBrandItem}
