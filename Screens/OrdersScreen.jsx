@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,10 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
-import {RadioButton} from 'react-native-paper'; // Importing RadioButton component from react-native-paper
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {RadioButton} from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const OrdersScreen = () => {
   const [reservations, setReservations] = useState([]);
@@ -22,33 +24,34 @@ const OrdersScreen = () => {
   const itemsPerPage = 5;
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchReservations = async () => {
-      try {
-        const userId = await AsyncStorage.getItem('userId');
-        const token = await AsyncStorage.getItem('token');
+  const fetchReservations = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      const token = await AsyncStorage.getItem('token');
 
-        const response = await axios.get(
-          `http://192.168.1.185:3001/reservations/client/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+      const response = await axios.get(
+        `http://192.168.1.185:3001/reservations/client/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        },
+      );
 
-        setReservations(response.data);
-      } catch (error) {
-        console.error('Error fetching reservations:', error);
-        setError('Failed to fetch reservations');
-      } finally {
-        setLoading(false);
-      }
-    };
+      setReservations(response.data);
+    } catch (error) {
+      console.error('Error fetching reservations:', error);
+      setError('Failed to fetch reservations');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchReservations();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchReservations();
+    }, []),
+  );
   const formatDate = dateString => {
     const date = new Date(dateString);
     return `${date.getDate().toString().padStart(2, '0')}-${(
@@ -103,7 +106,10 @@ const OrdersScreen = () => {
         </Text>
       );
     }
-
+    const handlePayClick = reservationId => {
+      AsyncStorage.setItem('reservationId', reservationId);
+      navigation.navigate('PaymentScreen');
+    };
     return paginatedReservations.map(reservation => (
       <View key={reservation._id} style={styles.orderContainer}>
         <Text style={styles.orderText}>
@@ -125,6 +131,40 @@ const OrdersScreen = () => {
         <Text style={styles.orderText}>
           Comments: {reservation.commentaire}
         </Text>
+
+        {/* Ajout du bouton pour les réservations confirmées */}
+        {reservation.status === 'confirmer' && (
+          <View style={styles.paymentButtonContainer}>
+            {reservation.statusPaiement === 'payee' ? (
+              <View style={styles.alreadyPaidContainer}>
+                <Icon
+                  name="checkmark"
+                  size={20}
+                  color="#00B74A"
+                  style={styles.icon}
+                />
+                <Text style={styles.alreadyPaidText}>
+                  Already paid and confirmed
+                </Text>
+              </View>
+            ) : reservation.statusPaiement === 'en attente' ? (
+              <Text style={styles.awaitingConfirmationText}>
+                Already paid awaiting for admin confirmation
+              </Text>
+            ) : (
+              <TouchableOpacity
+                style={styles.paymentButton}
+                onPress={() => handlePayClick(reservation._id)}>
+                <MaterialCommunityIcons
+                  name="credit-card"
+                  color="#ffffff"
+                  size={20}
+                />
+                <Text style={styles.paymentButtonText}>You can pay now</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
         {renderOrderStatus(reservation.status)}
       </View>
     ));
@@ -166,7 +206,7 @@ const OrdersScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.radioButtonsContainer}>
-      <Text style={styles.groupTitle}>Reservation Status</Text>
+        <Text style={styles.groupTitle}>Reservation Status</Text>
         <RadioButton.Group
           onValueChange={value => {
             setSelectedStatus(value);
@@ -344,6 +384,47 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal: 10,
     marginTop: 10,
+  },
+  paymentButtonContainer: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  paymentButtonContainer: {
+    marginTop: 10,
+  },
+  paymentButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    padding: 7,
+    backgroundColor: '#98b4a6',
+    borderRadius: 5,
+    marginBottom: 15,
+  },
+  paymentButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  alreadyPaidContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  alreadyPaidText: {
+    fontSize: 12,
+    color: '#333',
+    textAlign: 'center',
+  },
+  awaitingConfirmationText: {
+    fontSize: 12,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 15,
   },
 });
 

@@ -18,6 +18,7 @@ import InfoBlogScreen from './Screens/InfoBlogScreen';
 import AboutScreen from './Screens/AboutScreen';
 import UpdateProfileScreen from './Screens/UpdateProfileScreen';
 import BrandScreen from './Screens/BrandScreen';
+import PaymentScreen from './Screens/PaymentScreen';
 import {
   NavigationContainer,
   useNavigation,
@@ -248,6 +249,14 @@ const Stacknav = ({userData}) => {
         }}
         name="BrandScreen"
         component={BrandScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: '', 
+        }}
+        name="PaymentScreen"
+        component={PaymentScreen}
       />
     </Stack.Navigator>
   );
