@@ -41,26 +41,43 @@ export default function SignupScreen() {
 
   const handleSignup = async () => {
     if (!validateFields()) return;
-
+  
     try {
       const fullPhoneNumber = `+${callingCode}${phoneNumber}`;
+  
+      // Create a new FormData object
+      const formData = new FormData();
+      formData.append('nom', firstName);
+      formData.append('prenom', lastName);
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('CIN', cin);
+      formData.append('passport', passport);
+      formData.append('adresse', address);
+      formData.append('numTel', fullPhoneNumber);
+      formData.append('dateNaissance', birthDate.toISOString());
+      formData.append('numPermisConduire', drivingLicenseNumber);
+      formData.append('dateExpirationPermis', drivingLicenseExpiry.toISOString());
+  
+      // Append the image only if it is selected
+      if (image) {
+        formData.append('image', {
+          uri: image,
+          type: 'image/jpeg',
+          name: 'profile.jpg',
+        });
+      }
+  
       const response = await axios.post(
         'http://192.168.1.185:3001/users/register',
+        formData,
         {
-          nom: firstName,
-          prenom: lastName,
-          email,
-          password,
-          CIN: cin,
-          passport,
-          adresse: address,
-          numTel: fullPhoneNumber,
-          dateNaissance: birthDate,
-          numPermisConduire: drivingLicenseNumber,
-          dateExpirationPermis: drivingLicenseExpiry,
-          image,
-        },
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
+  
       console.log('Signup successful', response.data);
       navigation.navigate('Login');
     } catch (error) {
@@ -68,6 +85,7 @@ export default function SignupScreen() {
       Alert.alert('Signup failed', error.message);
     }
   };
+  
 
   const pickImage = async () => {
     launchImageLibrary(
@@ -87,10 +105,11 @@ export default function SignupScreen() {
         } else if (response.assets && response.assets.length > 0) {
           const selectedImage = response.assets[0];
           setImage(`data:${selectedImage.type};base64,${selectedImage.base64}`);
+          console.log('Image selected:', selectedImage.uri); // Ajout d'un log pour vérifier
         }
       },
     );
-  };
+};  
 
   const handleNextStep = () => {
     if (step < 3) {

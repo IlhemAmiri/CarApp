@@ -90,7 +90,14 @@ export default function UpdateProfileScreen() {
 
     const formData = new FormData();
     for (const key in client) {
-      if (client[key]) {
+      if (key === 'image' && client.image) {
+        const imageUri = client.image.replace('file://', '');
+        formData.append('image', {
+          uri: imageUri,
+          type: 'image/jpeg',
+          name: 'profile.jpg',
+        });
+      } else if (client[key]) {
         formData.append(key, client[key]);
       }
     }
