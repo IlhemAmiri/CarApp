@@ -137,27 +137,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#F7F7F7',
+    backgroundColor: '#f0f0f0',
   },
   profileContainer: {
     alignItems: 'center',
     marginBottom: 24,
   },
   profileImage: {
-    width: 120,
-    height: 120,
+    width: 80,
+    height: 80,
     borderRadius: 60,
     marginBottom: 12,
     borderWidth: 2,
     borderColor: '#000',
   },
   profileName: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
   },
   profileEmail: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#777',
   },
   carsList: {

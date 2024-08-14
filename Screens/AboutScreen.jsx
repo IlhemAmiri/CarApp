@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#F4F4F9',
+    backgroundColor: '#f0f0f0',
   },
   centered: {
     flex: 1,

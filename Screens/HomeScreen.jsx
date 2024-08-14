@@ -618,7 +618,7 @@ const HomeScreen = () => {
                     </View>
                   </View>
                   <View style={styles.noveltyFooter}>
-                    <Text style={styles.noveltyPrice}>${item.prixParJ}</Text>
+                    <Text style={styles.noveltyPrice}>${item.prixParJ}/ day</Text>
                     <TouchableOpacity
                       style={{
                         borderRadius: SPACING / 2,

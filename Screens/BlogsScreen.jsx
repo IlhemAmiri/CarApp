@@ -114,7 +114,7 @@ const BlogsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#f0f0f0',
     padding: SPACING,
   },
   blogsContainer: {

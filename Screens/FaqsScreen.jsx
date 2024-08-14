@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     appContainer: {
         flexGrow: 1,
         padding: 20,
-        backgroundColor: '#f4f4f4',
+        backgroundColor: '#f0f0f0',
     },
     mainHeading: {
         color: '#30B21A',

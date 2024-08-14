@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   noveltyAttributes: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Ensure items are spaced out evenly
+    justifyContent: 'space-between', 
     flexWrap: 'wrap',
     marginBottom: SPACING,
     width: '100%',
@@ -140,22 +140,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginBottom: SPACING,
-    justifyContent: 'space-between', // Ensure space between rows
+    justifyContent: 'space-between', 
   },
   noveltyAttribute: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: SPACING / 2,
-    width: '48%', // Adjust width to ensure two columns
+    width: '48%', 
   },
   noveltyattributeIcon: {
-    width: SPACING * 1.8, // Reduced icon size
-    height: SPACING * 1.8, // Reduced icon size
+    width: SPACING * 1.8,
+    height: SPACING * 1.8, 
     marginRight: SPACING / 2,
     alignSelf: 'center',
   },
   noveltyattributeText: {
-    fontSize: SPACING * 1.4, // Reduced text size
+    fontSize: SPACING * 1.4, 
     alignSelf: 'center',
   },
   carFooter: {

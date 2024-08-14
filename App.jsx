@@ -69,6 +69,7 @@ const Stacknav = ({userData}) => {
         },
         headerTintColor: '#000',
         headerTitleAlign: 'center',
+        headerShadowVisible: false,
         headerLeft: () => (
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <LinearGradient

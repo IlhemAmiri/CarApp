@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {
   StyleSheet,
   Text,
@@ -20,37 +20,37 @@ function ProfileScreen({navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        const userId = await AsyncStorage.getItem('userId');
-        const response = await fetch(
-          `http://192.168.1.185:3001/users/clients/${userId}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
+      const fetchUserData = async () => {
+        try {
+          const token = await AsyncStorage.getItem('token');
+          const userId = await AsyncStorage.getItem('userId');
+          const response = await fetch(
+            `http://192.168.1.185:3001/users/clients/${userId}`,
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
             },
-          },
-        );
+          );
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+          if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+          }
+
+          const data = await response.json();
+          setUserData(data);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        } finally {
+          setLoading(false);
         }
+      };
 
-        const data = await response.json();
-        setUserData(data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, [])
-);
+      fetchUserData();
+    }, []),
+  );
 
   if (loading) {
     return (
@@ -165,7 +165,7 @@ function ProfileScreen({navigation}) {
           }>
           <LinearGradient
             style={styles.gradient}
-            colors={['#1ECB15','#006200']}>
+            colors={['#1ECB15', '#006200']}>
             <Text style={styles.textupdate}> Update Your Profile </Text>
             <Ionicons name="arrow-forward" size={24} color="#FFFFFF" />
           </LinearGradient>
@@ -179,6 +179,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#f0f0f0',
   },
   textupdate: {
     fontSize: 16,

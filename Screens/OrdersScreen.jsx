@@ -231,7 +231,7 @@ const OrdersScreen = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#f0f0f0',
   },
   loaderContainer: {
     flex: 1,

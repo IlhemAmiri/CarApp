@@ -9,38 +9,38 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient'; // Pour le dégradé de couleur
 
 const DrawerList = [
-  {icon: 'home-outline', label: 'Home', navigateTo: 'Home', color: '#FF6347'},
-  {icon: 'car-multiple', label: 'Cars', navigateTo: 'Cars', color: '#4682B4'},
+  {icon: 'home', label: 'Home', navigateTo: 'Home', color: '#3a9679'},
+  {icon: 'car-multiple', label: 'Cars', navigateTo: 'Cars', color: '#34495e'},
   {
-    icon: 'account-outline',
+    icon: 'account',
     label: 'Profile',
     navigateTo: 'Profile',
-    color: '#32CD32',
+    color: '#497285',
   },
   {
-    icon: 'cart-outline',
+    icon: 'cart',
     label: 'Orders',
     navigateTo: 'Orders',
-    color: '#FFD700',
+    color: '#e8751a',
   },
   {
-    icon: 'heart-outline',
+    icon: 'heart',
     label: 'Favoris',
     navigateTo: 'FavCar',
-    color: '#FF4500',
+    color: '#da4949',
   },
-  {icon: 'book-outline', label: 'Blogs', navigateTo: 'Blogs', color: '#9370DB'},
+  {icon: 'book-open-variant', label: 'Blogs', navigateTo: 'Blogs', color: '#34495e'},
   {
-    icon: 'help-circle-outline',
+    icon: 'help-circle',
     label: 'FAQs',
     navigateTo: 'Faqs',
-    color: '#1E90FF',
+    color: '#34495e',
   },
   {
-    icon: 'information-outline',
+    icon: 'information',
     label: 'About Us',
     navigateTo: 'About',
-    color: '#00CED1',
+    color: '#3a9679',
   },
 ];
 
@@ -53,7 +53,6 @@ const DrawerLayout = ({icon, label, navigateTo, color}) => {
       onPress={() => {
         navigation.navigate(navigateTo);
       }}
-      style={styles.drawerItem}
     />
   );
 };
@@ -209,10 +208,7 @@ const styles = StyleSheet.create({
   signOutLabel: {
     color: '#FF4500',
   },
-  drawerItem: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#eeeeee',
-  },
+
 });
 
 export default DrawerContent;

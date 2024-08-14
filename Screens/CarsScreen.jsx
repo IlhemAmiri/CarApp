@@ -20,7 +20,7 @@ import FilterDrawer from '../FilterDrawer';
 
 const SPACING = 10;
 const colors = {
-  light: '#f8f8f8',
+  light: '#f0f0f0',
   'dark-gray': '#333333',
   black: '#000000',
   yellow: '#FFD700',
@@ -426,6 +426,7 @@ const styles = StyleSheet.create({
   pageButtonText: {
     color: colors.white,
     fontWeight: 'bold',
+    fontSize: 16,
   },
   pageInfo: {
     fontSize: 18,
