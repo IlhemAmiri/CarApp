@@ -238,7 +238,7 @@ const InfoScreen = ({route, navigation}) => {
                     <Text style={styles.noteAuthor}>
                       {`${note.idClient.nom} ${note.idClient.prenom}`}
                     </Text>
-                    <Text style={styles.noteDate}>{note.created_at}</Text>
+                    <Text style={styles.noteDate}> {new Date(note.created_at).toLocaleDateString('en-GB')}</Text>
                   </View>
                   {renderStars(note.note)}
                 </View>
