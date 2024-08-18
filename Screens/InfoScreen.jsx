@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -27,6 +28,8 @@ const colors = {
 };
 const InfoScreen = ({route, navigation}) => {
   const [vehicle, setVehicle] = useState(null);
+  const [notes, setNotes] = useState([]);
+  const [loadingNotes, setLoadingNotes] = useState(true);
   const {id} = route.params;
 
   useEffect(() => {
@@ -43,17 +46,61 @@ const InfoScreen = ({route, navigation}) => {
     fetchVehicle();
   }, [id]);
 
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`http://192.168.1.185:3001/notes/car/${id}`)
+        .then(response => {
+          setNotes(response.data);
+          setLoadingNotes(false);
+        })
+        .catch(error => {
+          console.error('There was an error fetching the notes!', error);
+          setLoadingNotes(false);
+        });
+    }
+  }, [id]);
+
+  const renderStars = rating => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+    const quarterStar = rating % 1 >= 0.25 && rating % 1 < 0.5 ? 1 : 0;
+  
+    return (
+      <View style={styles.noteRatingContainer}>
+        {[...Array(fullStars)].map((_, i) => (
+          <Ionicons key={i} name="star" size={16} color={colors.yellow} />
+        ))}
+        {halfStar ? (
+          <Ionicons name="star-half" size={16} color={colors.yellow} />
+        ) : quarterStar ? (
+          <Ionicons name="star-outline" size={16} color={colors.yellow} />
+        ) : (
+          <Text style={{ display: 'none' }}></Text>
+        )}
+        {[...Array(5 - fullStars - halfStar - quarterStar)].map((_, i) => (
+          <Ionicons
+            key={i}
+            name="star-outline"
+            size={16}
+            color={colors.yellow}
+          />
+        ))}
+      </View>
+    );
+  };
+  
   if (!vehicle) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <ActivityIndicator size="large" color="#1ECB15" />
+        <ActivityIndicator size="large" color={colors.green} />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -173,7 +220,36 @@ const InfoScreen = ({route, navigation}) => {
             <Text style={styles.rentButtonText}>Rent a Car</Text>
           </TouchableOpacity>
         </View>
-      </View>
+
+        {/* Notes Section */}
+        <View style={styles.notesSection}>
+          <Text style={styles.sectionTitleReviews}>Reviews</Text>
+          {loadingNotes ? (
+            <ActivityIndicator size="large" color={colors.green} />
+          ) : notes.length > 0 ? (
+            notes.map((note, index) => (
+              <View key={index} style={styles.noteCard}>
+                <View style={styles.noteHeader}>
+                  <Image
+                    source={{uri: note.idClient.image}}
+                    style={styles.noteImage}
+                  />
+                  <View style={styles.noteAuthorContainer}>
+                    <Text style={styles.noteAuthor}>
+                      {`${note.idClient.nom} ${note.idClient.prenom}`}
+                    </Text>
+                    <Text style={styles.noteDate}>{note.created_at}</Text>
+                  </View>
+                  {renderStars(note.note)}
+                </View>
+                <Text style={styles.noteComment}>{note.commentaire || ''}</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noNotesText}>No reviews yet.</Text>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -186,8 +262,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
   },
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 20,
+    paddingBottom: 20, // Ensures content doesn't overlap at the bottom
   },
   header: {
     flexDirection: 'row',
@@ -296,5 +373,59 @@ const styles = StyleSheet.create({
     marginLeft: SPACING / 2,
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  notesSection: {
+    marginTop: 20,
+  },
+  sectionTitleReviews: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.black,
+    marginBottom: 10,
+  },
+  noteCard: {
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: colors['dark-gray'],
+  },
+  noteHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  noteImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  noteAuthorContainer: {
+    flex: 1,
+  },
+  noteAuthor: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.black,
+    marginTop: 5,
+  },
+  noteDate: {
+    fontSize: 12,
+    color: colors.gray,
+  },
+  noteRatingContainer: {
+    flexDirection: 'row',
+  },
+  noteComment: {
+    fontSize: 14,
+    color: colors.black,
+  },
+  noReviewsText: {
+    fontSize: 14,
+    color: colors.gray,
+    textAlign: 'center',
+    marginTop: 10,
   },
 });

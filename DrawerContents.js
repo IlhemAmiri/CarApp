@@ -132,14 +132,14 @@ function DrawerContent({setIsLoggedIn, ...props}) {
             <LinearGradient
               colors={['#006200', '#60A23C', '#97DA6F']}
               style={styles.userInfoSection}>
-              <View style={{flexDirection: 'row', marginTop: 15}}>
+              <View style={{flexDirection: 'row', marginTop: 20}}>
                 <Avatar.Image
                   source={{
                     uri: userData?.image || 'https://via.placeholder.com/50',
                   }}
-                  size={70}
+                  size={60}
                 />
-                <View style={{marginLeft: 25, flexDirection: 'column'}}>
+                <View style={{marginLeft: 15, flexDirection: 'column'}}>
                   <Title style={styles.title}>
                     {userData?.prenom} {userData?.nom}
                   </Title>
