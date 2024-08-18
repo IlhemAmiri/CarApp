@@ -139,7 +139,7 @@ function DrawerContent({setIsLoggedIn, ...props}) {
                   }}
                   size={60}
                 />
-                <View style={{marginLeft: 15, flexDirection: 'column'}}>
+                <View style={{marginLeft:5, flexDirection: 'column'}}>
                   <Title style={styles.title}>
                     {userData?.prenom} {userData?.nom}
                   </Title>
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   caption: {
-    fontSize: 14,
+    fontSize: 13,
     lineHeight: 14,
     color: '#FFF',
   },
