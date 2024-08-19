@@ -16,6 +16,7 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const backIcon = require('../assets/left-arrow.png');
 const dotsIcon = require('../assets/dots.png');
@@ -38,6 +39,11 @@ const InfoScreen = ({route, navigation}) => {
   const [comment, setComment] = useState('');
   const [hasRated, setHasRated] = useState(false);
   const [refreshNotes, setRefreshNotes] = useState(false);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [updatedRating, setUpdatedRating] = useState('');
+  const [updatedComment, setUpdatedComment] = useState('');
+  const [selectedNote, setSelectedNote] = useState(null);
+
   const {id} = route.params;
 
   useEffect(() => {
@@ -120,12 +126,68 @@ const InfoScreen = ({route, navigation}) => {
       }
     }
   };
-  const handleRatingInput = text => {
+  const handleDelete = async noteId => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.delete(
+        `http://192.168.1.185:3001/notes/${noteId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      alert('Review deleted successfully');
+      setRefreshNotes(prev => !prev); // Refresh notes after deletion
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Failed to delete review');
+    }
+  };
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const id = await AsyncStorage.getItem('userId');
+      setUserId(id);
+    };
+    getUserId();
+  }, []);
+
+  const handleUpdateSubmit = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.put(
+        `http://192.168.1.185:3001/notes/${selectedNote._id}`,
+        {
+          note: updatedRating,
+          commentaire: updatedComment,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      alert('Review updated successfully');
+      setShowUpdateForm(false);
+      setRefreshNotes(prev => !prev); // Refresh notes after update
+    } catch (err) {
+      console.error('Update error:', err);
+      alert('Failed to update review');
+    }
+  };
+
+  const handleRatingInput = (text, isUpdate = false) => {
     const numericValue = text.replace(',', '.'); // Remplacer la virgule par un point
     const regex = /^\d*(\.\d{0,2})?$/; // Permet jusqu'à deux chiffres après le point
 
     if (regex.test(numericValue)) {
-      setRating(numericValue);
+      if (isUpdate) {
+        setUpdatedRating(numericValue);
+      } else {
+        setRating(numericValue);
+      }
     }
   };
 
@@ -366,14 +428,81 @@ const InfoScreen = ({route, navigation}) => {
                     </Text>
                   </View>
                   {renderStars(note.note)}
+                  
                 </View>
                 <Text style={styles.noteComment}>{note.commentaire || ''}</Text>
+                {note.idClient._id === userId && (
+                    <View style={styles.noteActions}>
+                      <TouchableOpacity
+                        style={styles.actionButton}
+                        onPress={() => {
+                          setSelectedNote(note);
+                          setUpdatedRating(note.note.toString());
+                          setUpdatedComment(note.commentaire);
+                          setShowUpdateForm(true);
+                        }}>
+                        <MaterialCommunityIcons
+                          name="square-edit-outline"
+                          size={20}
+                          color={colors.green}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.actionButton}
+                        onPress={() => handleDelete(note._id)}>
+                        <Ionicons name="trash-sharp" size={20} color="red" />
+                      </TouchableOpacity>
+                    </View>
+                  )}
               </View>
             ))
           ) : (
             <Text style={styles.noNotesText}>No reviews yet.</Text>
           )}
         </View>
+        {showUpdateForm && (
+          <Modal
+            transparent={true}
+            visible={showUpdateForm}
+            animationType="fade"
+            onRequestClose={() => setShowUpdateForm(false)}>
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.formTitle}>Update your review</Text>
+                <View style={styles.ratingInputContainer}>
+                  <Text style={styles.label}>Rating / 5</Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="numeric"
+                    placeholder="0.00"
+                    value={updatedRating}
+                    onChangeText={text => handleRatingInput(text, true)}
+                  />
+                </View>
+
+                <View style={styles.commentInputContainer}>
+                  <Text style={styles.label}>Comment</Text>
+                  <TextInput
+                    style={styles.commentInput}
+                    value={updatedComment}
+                    onChangeText={setUpdatedComment}
+                    multiline
+                  />
+                </View>
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={handleUpdateSubmit}>
+                  <Text style={styles.submitButtonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => setShowUpdateForm(false)}>
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -648,4 +777,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textTransform: 'uppercase',
   },
+  noteActions: {
+    flexDirection: 'row',
+    marginTop: 'auto', 
+  },
+  actionButton: {
+    marginTop: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)', 
+    padding: 5,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 50, 
+    marginHorizontal: 5, 
+  },
+
 });
