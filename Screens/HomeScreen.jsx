@@ -466,7 +466,7 @@ const HomeScreen = () => {
                           color: colors.black,
                           marginLeft: SPACING / 2,
                         }}>
-                        {car.note}
+                        {car.note.toFixed(2)}
                       </Text>
                     </View>
                     <TouchableOpacity onPress={() => toggleFavourite(car._id)}>

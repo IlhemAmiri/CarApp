@@ -168,7 +168,7 @@ const CarsScreen = () => {
         {item.note > 0 ? (
           <View style={styles.ratingContainer}>
             <Ionicons name="star" color={colors.yellow} size={SPACING * 1.6} />
-            <Text style={styles.ratingText}>{item.note}</Text>
+            <Text style={styles.ratingText}>{item.note.toFixed(2)}</Text>
           </View>
         ) : (
           <View style={styles.ratingContainer}>

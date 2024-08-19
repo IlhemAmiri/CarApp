@@ -9,10 +9,13 @@ import {
   View,
   ActivityIndicator,
   ScrollView,
+  TextInput,
+  Modal,
 } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const backIcon = require('../assets/left-arrow.png');
 const dotsIcon = require('../assets/dots.png');
@@ -30,6 +33,11 @@ const InfoScreen = ({route, navigation}) => {
   const [vehicle, setVehicle] = useState(null);
   const [notes, setNotes] = useState([]);
   const [loadingNotes, setLoadingNotes] = useState(true);
+  const [showRatingForm, setShowRatingForm] = useState(false);
+  const [rating, setRating] = useState('');
+  const [comment, setComment] = useState('');
+  const [hasRated, setHasRated] = useState(false);
+  const [refreshNotes, setRefreshNotes] = useState(false);
   const {id} = route.params;
 
   useEffect(() => {
@@ -47,25 +55,85 @@ const InfoScreen = ({route, navigation}) => {
   }, [id]);
 
   useEffect(() => {
-    if (id) {
-      axios
-        .get(`http://192.168.1.185:3001/notes/car/${id}`)
-        .then(response => {
+    const fetchNotes = async () => {
+      try {
+        if (id) {
+          const userId = await AsyncStorage.getItem('userId');
+          const response = await axios.get(
+            `http://192.168.1.185:3001/notes/car/${id}`,
+          );
           setNotes(response.data);
+
+          // Check if the user has already rated this car
+          const userHasRated = response.data.some(
+            note => note.idClient._id === userId,
+          );
+          setHasRated(userHasRated);
+
           setLoadingNotes(false);
-        })
-        .catch(error => {
-          console.error('There was an error fetching the notes!', error);
-          setLoadingNotes(false);
-        });
+        }
+      } catch (error) {
+        console.error('There was an error fetching the notes!', error);
+        setLoadingNotes(false);
+      }
+    };
+
+    fetchNotes();
+  }, [id, refreshNotes]);
+
+  const handleRatingSubmit = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const userId = await AsyncStorage.getItem('userId');
+
+      const submitResponse = await axios.post(
+        'http://192.168.1.185:3001/notes',
+        {
+          idClient: userId,
+          idVoiture: id,
+          note: rating,
+          commentaire: comment,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (submitResponse.status === 201) {
+        alert('Rating submitted successfully');
+        setShowRatingForm(false);
+        setHasRated(true);
+        setRating('');
+        setComment('');
+        setRefreshNotes(prev => !prev); // Toggle the refresh state to trigger notes re-fetch
+      }
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      if (error.response && error.response.status === 400) {
+        alert('You have already submitted a rating for this car.');
+      } else {
+        alert(
+          'An error occurred while submitting your rating. Please try again.',
+        );
+      }
     }
-  }, [id]);
+  };
+  const handleRatingInput = text => {
+    const numericValue = text.replace(',', '.'); // Remplacer la virgule par un point
+    const regex = /^\d*(\.\d{0,2})?$/; // Permet jusqu'à deux chiffres après le point
+
+    if (regex.test(numericValue)) {
+      setRating(numericValue);
+    }
+  };
 
   const renderStars = rating => {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 >= 0.5 ? 1 : 0;
     const quarterStar = rating % 1 >= 0.25 && rating % 1 < 0.5 ? 1 : 0;
-  
+
     return (
       <View style={styles.noteRatingContainer}>
         {[...Array(fullStars)].map((_, i) => (
@@ -76,7 +144,7 @@ const InfoScreen = ({route, navigation}) => {
         ) : quarterStar ? (
           <Ionicons name="star-outline" size={16} color={colors.yellow} />
         ) : (
-          <Text style={{ display: 'none' }}></Text>
+          <Text style={{display: 'none'}}></Text>
         )}
         {[...Array(5 - fullStars - halfStar - quarterStar)].map((_, i) => (
           <Ionicons
@@ -89,7 +157,7 @@ const InfoScreen = ({route, navigation}) => {
       </View>
     );
   };
-  
+
   if (!vehicle) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -208,12 +276,66 @@ const InfoScreen = ({route, navigation}) => {
               </Text>
             </View>
           </View>
-          {vehicle.note > 0 && (
-            <View style={styles.ratingContainer}>
-              <Ionicons name="star" color={colors.yellow} size={SPACING * 2} />
-              <Text style={styles.ratingText}>{vehicle.note}</Text>
+          <View style={styles.ratingAndButtonContainer}>
+            {vehicle.note > 0 && (
+              <View style={styles.ratingContainer}>
+                <Ionicons
+                  name="star"
+                  color={colors.yellow}
+                  size={SPACING * 2}
+                />
+                <Text style={styles.ratingText}>{vehicle.note.toFixed(2)}</Text>
+              </View>
+            )}
+            {!hasRated && (
+              <TouchableOpacity
+                style={styles.addRateButton}
+                onPress={() => setShowRatingForm(true)}>
+                <Text style={styles.addRateButtonText}>Add Your Rate</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <Modal
+            transparent={true}
+            visible={showRatingForm}
+            animationType="fade"
+            onRequestClose={() => setShowRatingForm(false)}>
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.formTitle}>Rate this car</Text>
+                <View style={styles.ratingInputContainer}>
+                  <Text style={styles.label}>Note / 5</Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="numeric"
+                    placeholder="0.00"
+                    value={rating}
+                    onChangeText={text => handleRatingInput(text)}
+                  />
+                </View>
+
+                <View style={styles.commentInputContainer}>
+                  <Text style={styles.label}>Comment</Text>
+                  <TextInput
+                    style={styles.commentInput}
+                    value={comment}
+                    onChangeText={setComment}
+                    multiline
+                  />
+                </View>
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={handleRatingSubmit}>
+                  <Text style={styles.submitButtonText}>Submit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => setShowRatingForm(false)}>
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          )}
+          </Modal>
           <TouchableOpacity
             onPress={() => navigation.navigate('Booking', {id: vehicle._id})}
             style={styles.rentButton}>
@@ -238,7 +360,10 @@ const InfoScreen = ({route, navigation}) => {
                     <Text style={styles.noteAuthor}>
                       {`${note.idClient.nom} ${note.idClient.prenom}`}
                     </Text>
-                    <Text style={styles.noteDate}> {new Date(note.created_at).toLocaleDateString('en-GB')}</Text>
+                    <Text style={styles.noteDate}>
+                      {' '}
+                      {new Date(note.created_at).toLocaleDateString('en-GB')}
+                    </Text>
                   </View>
                   {renderStars(note.note)}
                 </View>
@@ -427,5 +552,100 @@ const styles = StyleSheet.create({
     color: colors.gray,
     textAlign: 'center',
     marginTop: 10,
+  },
+  ratingAndButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  ratingInputContainer: {
+    marginBottom: 15,
+    width: '100%',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 16,
+  },
+  commentInputContainer: {
+    marginBottom: 20,
+    width: '100%',
+  },
+  commentInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 16,
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  submitButton: {
+    backgroundColor: '#000',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cancelButton: {
+    backgroundColor: '#ccc',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  cancelButtonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  addRateButton: {
+    backgroundColor: '#FFD700',
+    borderRadius: 25,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+
+  addRateButtonText: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: '600',
+    textTransform: 'uppercase',
   },
 });
