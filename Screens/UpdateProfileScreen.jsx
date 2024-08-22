@@ -15,6 +15,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
+
 
 export default function UpdateProfileScreen() {
   const [client, setClient] = useState({
@@ -50,7 +53,7 @@ export default function UpdateProfileScreen() {
         }
 
         const response = await fetch(
-          `http://192.168.1.185:3001/users/clients/${clientId}`,
+          `${Config.API_URL}/users/clients/${clientId}`,
           {
             method: 'GET',
             headers: {
@@ -106,7 +109,7 @@ export default function UpdateProfileScreen() {
       const clientId = await AsyncStorage.getItem('userId');
       const token = await AsyncStorage.getItem('token');
       const response = await fetch(
-        `http://192.168.1.185:3001/users/clients/${clientId}`,
+        `${Config.API_URL}/users/clients/${clientId}`,
         {
           method: 'PUT',
           headers: {
@@ -138,7 +141,7 @@ export default function UpdateProfileScreen() {
       const clientId = await AsyncStorage.getItem('userId');
       const token = await AsyncStorage.getItem('token');
       const response = await fetch(
-        'http://192.168.1.185:3001/users/update-password',
+        `${Config.API_URL}/users/update-password`,
         {
           method: 'PUT',
           headers: {

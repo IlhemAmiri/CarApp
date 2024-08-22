@@ -1,9 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {API_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 
 const SPACING = 10;
 const colors = {
@@ -21,10 +30,24 @@ const BlogsScreen = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchBlogs = async (page) => {
+    const fetchBlogs = async page => {
       try {
-        const res = await axios.get(`http://192.168.1.185:3001/blogs?page=${page}&limit=${blogsPerPage}`);
-        setBlogs(res.data.data);
+        const res = await axios.get(
+          `${Config.API_URL}/blogs?page=${page}&limit=${blogsPerPage}`,
+        );
+        let blogsData = res.data.data;
+
+        blogsData = blogsData.map(blog => {
+          if (blog.image && blog.image.includes('http://localhost:3001')) {
+            blog.image = blog.image.replace(
+              'http://localhost:3001',
+              'http://10.0.2.2:3001',
+            );
+          }
+          return blog;
+        });
+
+        setBlogs(blogsData);
         setTotalPages(Math.ceil(res.data.total / blogsPerPage));
       } catch (error) {
         console.error('Failed to fetch blogs:', error);
@@ -34,8 +57,8 @@ const BlogsScreen = () => {
     fetchBlogs(currentPage);
   }, [currentPage]);
 
-  const formatDate = (date) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const formatDate = date => {
+    const options = {year: 'numeric', month: 'long', day: 'numeric'};
     return new Date(date).toLocaleDateString(undefined, options);
   };
 
@@ -54,10 +77,10 @@ const BlogsScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.blogsContainer}>
-        {blogs.map((blog) => (
+        {blogs.map(blog => (
           <View key={blog._id} style={styles.card}>
             <View style={styles.imageContainer}>
-              <Image source={{ uri: blog.image }} style={styles.image} />
+              <Image source={{uri: blog.image}} style={styles.image} />
               <LinearGradient
                 colors={['rgba(0, 0, 0, 0.4)', 'rgba(0, 0, 0, 0)']}
                 style={styles.imageGradient}
@@ -72,12 +95,10 @@ const BlogsScreen = () => {
             </View>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate('InfoBlog', { id: blog._id })}
-            >
+              onPress={() => navigation.navigate('InfoBlog', {id: blog._id})}>
               <LinearGradient
                 style={styles.gradient}
-                colors={['#1ECB15', colors.black]}
-              >
+                colors={['#1ECB15', colors.black]}>
                 <Ionicons
                   name="arrow-forward"
                   size={SPACING * 2}
@@ -90,21 +111,37 @@ const BlogsScreen = () => {
       </View>
       <View style={styles.paginationContainer}>
         <TouchableOpacity
-          style={[styles.paginationButton, currentPage === 1 && styles.disabledButton]}
+          style={[
+            styles.paginationButton,
+            currentPage === 1 && styles.disabledButton,
+          ]}
           onPress={handlePreviousPage}
-          disabled={currentPage === 1}
-        >
-          <Text style={[styles.paginationText, currentPage === 1 && styles.disabledText]}>Previous</Text>
+          disabled={currentPage === 1}>
+          <Text
+            style={[
+              styles.paginationText,
+              currentPage === 1 && styles.disabledText,
+            ]}>
+            Previous
+          </Text>
         </TouchableOpacity>
         <Text style={styles.pageInfo}>
           Page {currentPage} of {totalPages}
         </Text>
         <TouchableOpacity
-          style={[styles.paginationButton, currentPage === totalPages && styles.disabledButton]}
+          style={[
+            styles.paginationButton,
+            currentPage === totalPages && styles.disabledButton,
+          ]}
           onPress={handleNextPage}
-          disabled={currentPage === totalPages}
-        >
-          <Text style={[styles.paginationText, currentPage === totalPages && styles.disabledText]}>Next</Text>
+          disabled={currentPage === totalPages}>
+          <Text
+            style={[
+              styles.paginationText,
+              currentPage === totalPages && styles.disabledText,
+            ]}>
+            Next
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -151,7 +188,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     padding: SPACING,
-    paddingBottom: SPACING * 5, 
+    paddingBottom: SPACING * 5,
   },
   category: {
     fontSize: 14,
@@ -190,7 +227,7 @@ const styles = StyleSheet.create({
   paginationButton: {
     paddingHorizontal: SPACING * 2,
     paddingVertical: SPACING / 2,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     borderRadius: SPACING,
   },
   paginationText: {

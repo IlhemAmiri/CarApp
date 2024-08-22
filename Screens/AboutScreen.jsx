@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,Linking } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Add this line for icons
-
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 const AboutScreen = () => {
   const [socialMedia, setSocialMedia] = useState(null);
 
   useEffect(() => {
     const fetchSocialMedia = async () => {
       try {
-        const response = await axios.get('http://192.168.1.185:3001/socialmedia');
+        const response = await axios.get(`${Config.API_URL}/socialmedia`);
         setSocialMedia(response.data);
       } catch (error) {
         console.error('Error fetching social media data', error);

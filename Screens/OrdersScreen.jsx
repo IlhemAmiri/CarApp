@@ -14,6 +14,8 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {RadioButton} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 
 const OrdersScreen = () => {
   const [reservations, setReservations] = useState([]);
@@ -30,7 +32,7 @@ const OrdersScreen = () => {
       const token = await AsyncStorage.getItem('token');
 
       const response = await axios.get(
-        `http://192.168.1.185:3001/reservations/client/${userId}`,
+        `${Config.API_URL}/reservations/client/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

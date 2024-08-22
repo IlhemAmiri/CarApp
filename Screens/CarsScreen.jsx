@@ -17,6 +17,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FilterDrawer from '../FilterDrawer';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 
 const SPACING = 10;
 const colors = {
@@ -30,6 +32,7 @@ const colors = {
 };
 
 const CarsScreen = () => {
+  
   const [cars, setCars] = useState([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(12); // Number of items per page
@@ -70,7 +73,7 @@ const CarsScreen = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://192.168.1.185:3001/cars/recherche/check`,
+         `${Config.API_URL}/cars/recherche/check`,
         {
           params: {
             page,
@@ -83,6 +86,12 @@ const CarsScreen = () => {
           },
         },
       );
+      const carsData = response.data.data.map((item) => {
+        if (item.image && item.image.includes("http://localhost:3001")) {
+          item.image = item.image.replace("http://localhost:3001", "http://10.0.2.2:3001");
+        }
+        return item;
+      });
       setCars(response.data.data);
       setTotal(response.data.total);
     } catch (error) {
@@ -110,7 +119,7 @@ const CarsScreen = () => {
   const fetchFavourites = async (userId, token) => {
     try {
       const response = await axios.get(
-        `http://192.168.1.185:3001/favorite-cars/client/${userId}`,
+         `${Config.API_URL}/favorite-cars/client/${userId}`,
         {
           headers: {Authorization: `Bearer ${token}`},
         },
@@ -131,7 +140,7 @@ const CarsScreen = () => {
       if (!isFavourite) {
         // Add favorite
         await axios.post(
-          'http://192.168.1.185:3001/favorite-cars',
+           `${Config.API_URL}/favorite-cars`,
           {
             idClient: userId,
             idVoiture: carId,
@@ -143,7 +152,7 @@ const CarsScreen = () => {
         setFavourites(prev => new Set(prev).add(carId));
       } else {
         // Remove favorite
-        await axios.delete('http://192.168.1.185:3001/favorite-cars', {
+        await axios.delete(`${Config.API_URL}/favorite-cars`, {
           data: {idClient: userId, idVoiture: carId},
           headers: {Authorization: `Bearer ${token}`},
         });

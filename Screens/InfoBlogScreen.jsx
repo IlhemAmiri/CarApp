@@ -1,15 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import axios from 'axios';
-import { useRoute } from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
+import {API_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 
 const backIcon = require('../assets/left-arrow.png');
 const dotsIcon = require('../assets/dots.png');
 const InfoBlogScreen = ({navigation}) => {
   const route = useRoute();
-  const { id: blogId } = route.params;
-  
+  const {id: blogId} = route.params;
+
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,8 +27,23 @@ const InfoBlogScreen = ({navigation}) => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.185:3001/blogs/${blogId}`);
-        setBlog(response.data);
+        const response = await axios.get(`${Config.API_URL}/blogs/${blogId}`);
+        // Copier les données du blog pour manipulation
+        let blogData = response.data;
+
+        // Vérification et remplacement de l'URL de l'image si nécessaire
+        if (
+          blogData.image &&
+          blogData.image.includes('http://localhost:3001')
+        ) {
+          blogData.image = blogData.image.replace(
+            'http://localhost:3001',
+            'http://10.0.2.2:3001',
+          );
+        }
+
+        // Mise à jour de l'état avec les données du blog et l'URL corrigée
+        setBlog(blogData);
       } catch (err) {
         setError('Failed to fetch blog details');
       } finally {
@@ -47,23 +72,27 @@ const InfoBlogScreen = ({navigation}) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            activeOpacity={0.7}>
-            <Image source={backIcon} style={styles.icon} />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>Detail</Text>
-          <Image source={dotsIcon} style={styles.icon} />
-        </View>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}>
+          <Image source={backIcon} style={styles.icon} />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Detail</Text>
+        <Image source={dotsIcon} style={styles.icon} />
+      </View>
       <Text style={styles.title}>{blog.title}</Text>
-      <Image source={{ uri: blog.image }} style={styles.image} />
-      <Text style={styles.meta}>{blog.author} · {new Date(blog.date).toLocaleDateString()}</Text>
+      <Image source={{uri: blog.image}} style={styles.image} />
+      <Text style={styles.meta}>
+        {blog.author} · {new Date(blog.date).toLocaleDateString()}
+      </Text>
       <Text style={styles.summary}>{blog.summary}</Text>
       <View style={styles.contentContainer}>
         {blog.content.map((section, index) => (
           <View key={index} style={styles.section}>
-            {section.title && <Text style={styles.sectionTitle}>{section.title}</Text>}
+            {section.title && (
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+            )}
             <Text style={styles.sectionText}>{section.text}</Text>
           </View>
         ))}

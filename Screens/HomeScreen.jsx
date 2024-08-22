@@ -20,7 +20,8 @@ import {ScrollView} from 'react-native-gesture-handler';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
-
+import {API_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 
 const avatar = require('../assets/avatar.jpg');
 const SPACING = 10;
@@ -83,10 +84,18 @@ const HomeScreen = () => {
 
   const fetchCars = async () => {
     try {
-      const response = await axios.get(
-        'http://192.168.1.185:3001/cars?page=1&limit=4',
-      );
-      setCars(response.data.data);
+      const response = await axios.get(`${Config.API_URL}/cars?page=1&limit=4`);
+      const carsData = response.data.data.map(car => {
+        const carImageUrl = car.image;
+        if (carImageUrl.includes('http://localhost:3001')) {
+          car.image = carImageUrl.replace(
+            'http://localhost:3001',
+            'http://10.0.2.2:3001',
+          );
+        }
+        return car;
+      });
+      setCars(carsData);
     } catch (error) {
       console.error('Error fetching cars:', error);
     } finally {
@@ -96,7 +105,7 @@ const HomeScreen = () => {
   const fetchFavourites = async (userId, token) => {
     try {
       const response = await axios.get(
-        `http://192.168.1.185:3001/favorite-cars/client/${userId}`,
+        `${Config.API_URL}/favorite-cars/client/${userId}`,
         {
           headers: {Authorization: `Bearer ${token}`},
         },
@@ -113,7 +122,7 @@ const HomeScreen = () => {
       const token = await AsyncStorage.getItem('token');
       const userId = await AsyncStorage.getItem('userId');
       const response = await axios.get(
-        `http://192.168.1.185:3001/users/clients/${userId}`,
+        `${Config.API_URL}/users/clients/${userId}`,
         {
           headers: {Authorization: `Bearer ${token}`},
         },
@@ -136,7 +145,7 @@ const HomeScreen = () => {
       if (!isFavourite) {
         // Add favorite
         await axios.post(
-          'http://192.168.1.185:3001/favorite-cars',
+          `${Config.API_URL}/favorite-cars`,
           {
             idClient: userId,
             idVoiture: carId,
@@ -148,7 +157,7 @@ const HomeScreen = () => {
         setFavourites(prev => new Set(prev).add(carId));
       } else {
         // Remove favorite
-        await axios.delete('http://192.168.1.185:3001/favorite-cars', {
+        await axios.delete(`${Config.API_URL}/favorite-cars`, {
           data: {idClient: userId, idVoiture: carId},
           headers: {Authorization: `Bearer ${token}`},
         });
@@ -167,23 +176,21 @@ const HomeScreen = () => {
     }
   };
 
-  
-  const renderBrandItem = ({ item }) => {
+  const renderBrandItem = ({item}) => {
     const handleBrandPress = () => {
-      navigation.navigate('BrandScreen', { marque: item.name });
+      navigation.navigate('BrandScreen', {marque: item.name});
     };
-  
+
     return (
       <TouchableOpacity onPress={handleBrandPress}>
         <LinearGradient colors={['#fff', '#fff']} style={styles.brandCard}>
-          <Image source={{ uri: item.logo }} style={styles.brandLogo} />
+          <Image source={{uri: item.logo}} style={styles.brandLogo} />
           <Text style={styles.brandText}>{item.name}</Text>
           <Text style={styles.brandCount}>+{item.count}</Text>
         </LinearGradient>
       </TouchableOpacity>
     );
   };
-  
 
   const navigation = useNavigation();
 
@@ -220,9 +227,23 @@ const HomeScreen = () => {
   const fetchNoveltyCars = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.1.185:3001/cars?page=1&limit=3&sort=created_at:desc',
+        `${Config.API_URL}/cars?page=1&limit=3&sort=created_at:desc`,
       );
-      setNoveltyCars(response.data.data);
+  
+      // Récupérer les données des voitures
+      const cars = response.data.data;
+  
+      // Modifier l'URL de l'image pour chaque voiture si nécessaire
+      const updatedCars = cars.map(car => {
+        const carImageUrl = car.image;
+        if (carImageUrl.includes("http://localhost:3001")) {
+          car.image = carImageUrl.replace("http://localhost:3001", "http://10.0.2.2:3001");
+        }
+        return car;
+      });
+  
+      // Mettre à jour l'état `noveltyCars` avec les données modifiées
+      setNoveltyCars(updatedCars);
     } catch (error) {
       console.error('Error fetching novelty cars:', error);
     }
@@ -618,7 +639,9 @@ const HomeScreen = () => {
                     </View>
                   </View>
                   <View style={styles.noveltyFooter}>
-                    <Text style={styles.noveltyPrice}>${item.prixParJ}/ day</Text>
+                    <Text style={styles.noveltyPrice}>
+                      ${item.prixParJ}/ day
+                    </Text>
                     <TouchableOpacity
                       style={{
                         borderRadius: SPACING / 2,
@@ -838,8 +861,8 @@ const styles = StyleSheet.create({
     marginLeft: SPACING / 2,
   },
   iconBackground: {
-    backgroundColor: '#FFF', 
-    borderRadius: SPACING * 2 ,
+    backgroundColor: '#FFF',
+    borderRadius: SPACING * 2,
     padding: SPACING / 2,
     alignItems: 'center',
     justifyContent: 'center',

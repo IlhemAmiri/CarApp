@@ -7,7 +7,8 @@ import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient'; // Pour le dégradé de couleur
-
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 const DrawerList = [
   {icon: 'home', label: 'Home', navigateTo: 'Home', color: '#3a9679'},
   {icon: 'car-multiple', label: 'Cars', navigateTo: 'Cars', color: '#34495e'},
@@ -79,22 +80,34 @@ function DrawerContent({setIsLoggedIn, ...props}) {
       try {
         const token = await AsyncStorage.getItem('token');
         const userId = await AsyncStorage.getItem('userId');
+  
+        // Vérifiez si le token et l'userId existent avant d'effectuer la requête
+        if (!token || !userId) {
+          throw new Error('Missing token or userId');
+        }
+  
         const response = await fetch(
-          `http://192.168.1.185:3001/users/clients/${userId}`,
+          `${Config.API_URL}/users/clients/${userId}`,
           {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
-          },
+          }
         );
-
+  
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
         }
-
+  
         const data = await response.json();
+  
+        // Modifier l'URL de l'image si nécessaire
+        const userImageUrl = data.image;
+        if (userImageUrl && userImageUrl.includes("http://localhost:3001")) {
+          data.image = userImageUrl.replace("http://localhost:3001", "http://10.0.2.2:3001");
+        }
         setUserData(data);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -102,7 +115,7 @@ function DrawerContent({setIsLoggedIn, ...props}) {
         setLoading(false);
       }
     };
-
+  
     fetchUserData();
   }, []);
 

@@ -17,6 +17,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {API_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 
 const backIcon = require('../assets/left-arrow.png');
 const dotsIcon = require('../assets/dots.png');
@@ -49,10 +51,50 @@ const InfoScreen = ({route, navigation}) => {
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
-        const response = await axios.get(
-          `http://192.168.1.185:3001/cars/${id}`,
-        );
-        setVehicle(response.data);
+        const response = await axios.get(`${Config.API_URL}/cars/${id}`);
+        // Copier les données du véhicule pour manipulation
+        let vehicleData = response.data;
+
+        // Vérification et remplacement des URLs des images
+        if (
+          vehicleData.image &&
+          vehicleData.image.includes('http://localhost:3001')
+        ) {
+          vehicleData.image = vehicleData.image.replace(
+            'http://localhost:3001',
+            'http://10.0.2.2:3001',
+          );
+        }
+        if (
+          vehicleData.image2 &&
+          vehicleData.image2.includes('http://localhost:3001')
+        ) {
+          vehicleData.image2 = vehicleData.image2.replace(
+            'http://localhost:3001',
+            'http://10.0.2.2:3001',
+          );
+        }
+        if (
+          vehicleData.image3 &&
+          vehicleData.image3.includes('http://localhost:3001')
+        ) {
+          vehicleData.image3 = vehicleData.image3.replace(
+            'http://localhost:3001',
+            'http://10.0.2.2:3001',
+          );
+        }
+        if (
+          vehicleData.image4 &&
+          vehicleData.image4.includes('http://localhost:3001')
+        ) {
+          vehicleData.image4 = vehicleData.image4.replace(
+            'http://localhost:3001',
+            'http://10.0.2.2:3001',
+          );
+        }
+
+        // Mise à jour de l'état avec les données du véhicule et les URLs corrigées
+        setVehicle(vehicleData);
       } catch (error) {
         console.error('Error fetching vehicle data:', error);
       }
@@ -65,9 +107,7 @@ const InfoScreen = ({route, navigation}) => {
       try {
         if (id) {
           const userId = await AsyncStorage.getItem('userId');
-          const response = await axios.get(
-            `http://192.168.1.185:3001/notes/car/${id}`,
-          );
+          const response = await axios.get(`${Config.API_URL}/notes/car/${id}`);
           setNotes(response.data);
 
           // Check if the user has already rated this car
@@ -93,7 +133,7 @@ const InfoScreen = ({route, navigation}) => {
       const userId = await AsyncStorage.getItem('userId');
 
       const submitResponse = await axios.post(
-        'http://192.168.1.185:3001/notes',
+        `${Config.API_URL}/notes`,
         {
           idClient: userId,
           idVoiture: id,
@@ -129,14 +169,11 @@ const InfoScreen = ({route, navigation}) => {
   const handleDelete = async noteId => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.delete(
-        `http://192.168.1.185:3001/notes/${noteId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.delete(`${Config.API_URL}/notes/${noteId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       alert('Review deleted successfully');
       setRefreshNotes(prev => !prev); // Refresh notes after deletion
     } catch (err) {
@@ -158,7 +195,7 @@ const InfoScreen = ({route, navigation}) => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.put(
-        `http://192.168.1.185:3001/notes/${selectedNote._id}`,
+        `${Config.API_URL}/notes/${selectedNote._id}`,
         {
           note: updatedRating,
           commentaire: updatedComment,
@@ -428,32 +465,31 @@ const InfoScreen = ({route, navigation}) => {
                     </Text>
                   </View>
                   {renderStars(note.note)}
-                  
                 </View>
                 <Text style={styles.noteComment}>{note.commentaire || ''}</Text>
                 {note.idClient._id === userId && (
-                    <View style={styles.noteActions}>
-                      <TouchableOpacity
-                        style={styles.actionButton}
-                        onPress={() => {
-                          setSelectedNote(note);
-                          setUpdatedRating(note.note.toString());
-                          setUpdatedComment(note.commentaire);
-                          setShowUpdateForm(true);
-                        }}>
-                        <MaterialCommunityIcons
-                          name="square-edit-outline"
-                          size={20}
-                          color={colors.green}
-                        />
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.actionButton}
-                        onPress={() => handleDelete(note._id)}>
-                        <Ionicons name="trash-sharp" size={20} color="red" />
-                      </TouchableOpacity>
-                    </View>
-                  )}
+                  <View style={styles.noteActions}>
+                    <TouchableOpacity
+                      style={styles.actionButton}
+                      onPress={() => {
+                        setSelectedNote(note);
+                        setUpdatedRating(note.note.toString());
+                        setUpdatedComment(note.commentaire);
+                        setShowUpdateForm(true);
+                      }}>
+                      <MaterialCommunityIcons
+                        name="square-edit-outline"
+                        size={20}
+                        color={colors.green}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.actionButton}
+                      onPress={() => handleDelete(note._id)}>
+                      <Ionicons name="trash-sharp" size={20} color="red" />
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             ))
           ) : (
@@ -779,17 +815,16 @@ const styles = StyleSheet.create({
   },
   noteActions: {
     flexDirection: 'row',
-    marginTop: 'auto', 
+    marginTop: 'auto',
   },
   actionButton: {
     marginTop: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
     padding: 5,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    minWidth: 50, 
-    marginHorizontal: 5, 
+    minWidth: 50,
+    marginHorizontal: 5,
   },
-
 });

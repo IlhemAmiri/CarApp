@@ -12,6 +12,8 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Checkbox from 'expo-checkbox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 
 export default function LoginScreen({navigation, setIsLoggedIn}) {
   const [email, setEmail] = useState('');
@@ -55,7 +57,7 @@ export default function LoginScreen({navigation, setIsLoggedIn}) {
     }
 
     try {
-      const response = await fetch('http://192.168.1.185:3001/users/login', {
+      const response = await fetch(`${Config.API_URL}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

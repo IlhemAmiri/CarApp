@@ -4,6 +4,8 @@ import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 
 const SPACING = 10;
 const colors = {
@@ -22,8 +24,15 @@ const BrandScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.185:3001/cars/search/search?marque=${marque}`);
-        setCars(response.data);
+        const response = await axios.get( `${Config.API_URL}/cars/search/search?marque=${marque}`);
+        const updatedCars = response.data.map(car => {
+          if (car.image && car.image.includes("http://localhost:3001")) {
+            car.image = car.image.replace("http://localhost:3001", "http://10.0.2.2:3001");
+          }
+          return car;
+        });
+    
+        setCars(updatedCars);
       } catch (error) {
         console.error('Error fetching car data:', error);
       }

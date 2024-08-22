@@ -13,6 +13,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 
 const BookingScreen = () => {
   const [car, setCar] = useState(null);
@@ -45,7 +47,7 @@ const BookingScreen = () => {
         const token = await AsyncStorage.getItem('token');
 
         const clientResponse = await axios.get(
-          `http://192.168.1.185:3001/users/clients/${userId}`,
+          `${Config.API_URL}/users/clients/${userId}`,
           {
             headers: {Authorization: `Bearer ${token}`},
           },
@@ -53,11 +55,14 @@ const BookingScreen = () => {
         setClient(clientResponse.data);
 
         const carResponse = await axios.get(
-          `http://192.168.1.185:3001/cars/${id}`,
+          `${Config.API_URL}/cars/${id}`,
           {
             headers: {Authorization: `Bearer ${token}`},
           },
         );
+        if (carResponse.data.image && carResponse.data.image.includes("http://localhost:3001")) {
+          carResponse.data.image = carResponse.data.image.replace("http://localhost:3001", "http://10.0.2.2:3001");
+        }
         setCar(carResponse.data);
         setFormData(prevFormData => ({
           ...prevFormData,
@@ -141,7 +146,7 @@ const BookingScreen = () => {
       try {
         const token = await AsyncStorage.getItem('token');
         await axios.post(
-          'http://192.168.1.185:3001/reservations',
+          `${Config.API_URL}/reservations`,
           {
             ...formData,
             dateDebut: formData.dateDebut.toISOString(),

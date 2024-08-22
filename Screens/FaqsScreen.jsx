@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, LayoutAnimation, StyleSheet } from 'react-native';
 import axios from 'axios';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 
 const FaqsScreen = () => {
     const [faqs, setFaqs] = useState([]);
@@ -10,7 +12,7 @@ const FaqsScreen = () => {
     useEffect(() => {
         const fetchFaqs = async () => {
             try {
-                const response = await axios.get('http://192.168.1.185:3001/faq');
+                const response = await axios.get(`${Config.API_URL}/faq`);
                 setFaqs(response.data);
             } catch (error) {
                 console.error('Error fetching FAQs:', error);

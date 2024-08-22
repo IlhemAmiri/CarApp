@@ -29,7 +29,8 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DrawerContent from './DrawerContents';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import {API_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const SPACING = 10;
@@ -39,18 +40,28 @@ const colors = {
   black: '#000000',
   yellow: '#FFD700',
 };
+console.log('vhv,', Config.API_URL);
 
 const fetchUser = async (setUserData, setLoading) => {
   try {
     const token = await AsyncStorage.getItem('token');
     const userId = await AsyncStorage.getItem('userId');
     const response = await axios.get(
-      `http://192.168.1.185:3001/users/clients/${userId}`,
+      `${Config.API_URL}/users/clients/${userId}`,
       {
         headers: {Authorization: `Bearer ${token}`},
       },
     );
-    setUserData(response.data);
+    let userData = response.data;
+
+    // Modifier l'URL de l'image si nécessaire
+    const userImageUrl = userData.image;
+    if (userImageUrl.includes("http://localhost:3001")) {
+      userData.image = userImageUrl.replace("http://localhost:3001", "http://10.0.2.2:3001");
+    }
+
+    // Mettre à jour l'état avec les données modifiées
+    setUserData(userData);
   } catch (error) {
     console.error('Error fetching user data:', error);
   } finally {
@@ -189,7 +200,7 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'My Order', 
+          title: 'My Order',
         }}
         name="Orders"
         component={OrdersScreen}
@@ -197,7 +208,7 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: '', 
+          title: '',
         }}
         name="FavCar"
         component={FavCarScreen}
@@ -205,7 +216,7 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Blog Posts', 
+          title: 'Blog Posts',
         }}
         name="Blogs"
         component={BlogsScreen}
@@ -213,7 +224,7 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: '', 
+          title: '',
         }}
         name="Faqs"
         component={FaqsScreen}
@@ -221,7 +232,7 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: false,
-          title: '', 
+          title: '',
         }}
         name="InfoBlog"
         component={InfoBlogScreen}
@@ -229,7 +240,7 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: '', 
+          title: '',
         }}
         name="About"
         component={AboutScreen}
@@ -237,7 +248,7 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Update Your Profile', 
+          title: 'Update Your Profile',
         }}
         name="UpdateProfile"
         component={UpdateProfileScreen}
@@ -245,7 +256,7 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: '', 
+          title: '',
         }}
         name="BrandScreen"
         component={BrandScreen}
@@ -253,7 +264,7 @@ const Stacknav = ({userData}) => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: '', 
+          title: '',
         }}
         name="PaymentScreen"
         component={PaymentScreen}
@@ -289,7 +300,7 @@ const App = () => {
         const isAuth = await AsyncStorage.getItem('isAuth');
         if (isAuth === 'true') {
           setIsLoggedIn(true);
-          await fetchUser(setUserData, setLoading); 
+          await fetchUser(setUserData, setLoading);
         } else {
           setLoading(false);
         }

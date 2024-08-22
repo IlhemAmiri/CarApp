@@ -3,6 +3,8 @@ import { View, Text, Button, Alert, StyleSheet, TouchableOpacity } from 'react-n
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 
 const PaymentScreen = () => {
   const [paymentMethod, setPaymentMethod] = useState('cash');
@@ -26,7 +28,7 @@ const PaymentScreen = () => {
           return;
         }
 
-        const response = await axios.get(`http://192.168.1.185:3001/reservations/${reservationId}`, {
+        const response = await axios.get(`${Config.API_URL}/reservations/${reservationId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -62,7 +64,7 @@ const PaymentScreen = () => {
       }
 
       const response = await axios.post(
-        'http://192.168.1.185:3001/payments',
+        `${Config.API_URL}/payments`,
         {
           idReservation: reservationId,
           methodePaiement: paymentMethod,

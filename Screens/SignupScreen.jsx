@@ -16,6 +16,8 @@ import CountryPicker from 'react-native-country-picker-modal';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 
 export default function SignupScreen() {
   const [step, setStep] = useState(1);
@@ -69,7 +71,7 @@ export default function SignupScreen() {
       }
   
       const response = await axios.post(
-        'http://192.168.1.185:3001/users/register',
+        `${Config.API_URL}/users/register`,
         formData,
         {
           headers: {

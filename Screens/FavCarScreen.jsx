@@ -11,6 +11,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { API_URL } from 'react-native-dotenv';
+import Config from 'react-native-config'; 
 
 const {width} = Dimensions.get('window');
 
@@ -24,53 +26,64 @@ const FavCarScreen = ({navigation}) => {
       try {
         const userId = await AsyncStorage.getItem('userId');
         const token = await AsyncStorage.getItem('token');
-
+  
         if (!userId || !token) {
           navigation.navigate('Signin');
           return;
         }
-
+  
         const [clientResponse, favoriteCarsResponse] = await Promise.all([
-          axios.get(`http://192.168.1.185:3001/users/clients/${userId}`, {
+          axios.get(`${Config.API_URL}/users/clients/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          axios.get(
-            `http://192.168.1.185:3001/favorite-cars/client/${userId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+          axios.get(`${Config.API_URL}/favorite-cars/client/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-          ),
+          }),
         ]);
-
-        setClient(clientResponse.data);
+  
+        // Remplacer l'URL de l'image du client
+        const clientData = clientResponse.data;
+        if (clientData.image && clientData.image.includes("http://localhost:3001")) {
+          clientData.image = clientData.image.replace("http://localhost:3001", "http://10.0.2.2:3001");
+        }
+        setClient(clientData);
+  
         const favoriteCars = favoriteCarsResponse.data;
-
-        const carDetailsPromises = favoriteCars.map(favCar =>
-          axios.get(`http://192.168.1.185:3001/cars/${favCar.idVoiture}`, {
+  
+        // Remplacer l'URL de l'image pour chaque voiture favorite
+        const carDetailsPromises = favoriteCars.map(async favCar => {
+          const carResponse = await axios.get(`${Config.API_URL}/cars/${favCar.idVoiture}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }),
-        );
+          });
+  
+          const carData = carResponse.data;
+          if (carData.image && carData.image.includes("http://localhost:3001")) {
+            carData.image = carData.image.replace("http://localhost:3001", "http://10.0.2.2:3001");
+          }
+          return carData;
+        });
+  
         const carDetailsResponses = await Promise.all(carDetailsPromises);
-        setCars(carDetailsResponses.map(response => response.data));
+        setCars(carDetailsResponses);
       } catch (error) {
         setError('Failed to fetch data');
       }
     };
-
+  
     fetchClientData();
-  }, []);
+  }, []);  
   const handleRemoveFavorite = async carId => {
     try {
       const userId = await AsyncStorage.getItem('userId');
       const token = await AsyncStorage.getItem('token');
 
-      await axios.delete('http://192.168.1.185:3001/favorite-cars', {
+      await axios.delete(`${Config.API_URL}/favorite-cars`, {
         data: {idClient: userId, idVoiture: carId},
         headers: {Authorization: `Bearer ${token}`},
       });

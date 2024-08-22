@@ -13,6 +13,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {API_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 
 function ProfileScreen({navigation}) {
   const [userData, setUserData] = useState(null);
@@ -24,8 +26,13 @@ function ProfileScreen({navigation}) {
         try {
           const token = await AsyncStorage.getItem('token');
           const userId = await AsyncStorage.getItem('userId');
+
+          if (!token || !userId) {
+            throw new Error('Missing token or userId');
+          }
+
           const response = await fetch(
-            `http://192.168.1.185:3001/users/clients/${userId}`,
+            `${Config.API_URL}/users/clients/${userId}`,
             {
               method: 'GET',
               headers: {
@@ -40,6 +47,15 @@ function ProfileScreen({navigation}) {
           }
 
           const data = await response.json();
+
+          // Modifier l'URL de l'image si nécessaire
+          const userImageUrl = data.image;
+          if (userImageUrl && userImageUrl.includes('http://localhost:3001')) {
+            data.image = userImageUrl.replace(
+              'http://localhost:3001',
+              'http://10.0.2.2:3001',
+            );
+          }
           setUserData(data);
         } catch (error) {
           console.error('Error fetching user data:', error);
@@ -215,7 +231,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 6,
-    marginBottom:30,
+    marginBottom: 30,
   },
   sectionTitle: {
     fontSize: 20,
